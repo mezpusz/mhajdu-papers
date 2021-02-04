@@ -1,0 +1,116 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{rotating}
+\usepackage{array}
+\usepackage{vampire_induction}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{multirow}
+\usepackage{xspace}
+\usepackage{xargs}
+\usepackage{adjustbox}
+\usepackage{proof}
+\usepackage{hyperref}
+\usepackage{tabularx}
+%\usepackage{times}
+
+\makeatletter
+%\renewcommand\section{\@startsection{section}{1}{\z@}%
+%                       {-8\p@ \@plus -4\p@ \@minus -4\p@}%
+ %                      {8\p@ \@plus 4\p@ \@minus 4\p@}%
+ %                      {\normalfont\large\bfseries\boldmath
+ %                       \rightskip=\z@ \@plus 8em\pretolerance=10000 }}
+\makeatother
+\newcommand{\AV}[1]{{\color{red}{AV: #1}}}
+
+\newcommand{\todo}[1]{\emph{\color{red}{TODO: #1}}}
+
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\begin{document}
+%
+\title{Even Better Induction in Superposition Reasoning}
+%
+\titlerunning{ }
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{M\'arton Hajd\'{u}\inst{1} \and Petra Hozzov\'a\inst{1} \and
+  Laura Kov\'acs\inst{1\and 2} \and Andrei Voronkov\inst{3,}\inst{4}}
+%
+\authorrunning{ }
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{
+  TU Wien, Austria \and  Chalmers University of Technology, Sweden
+  \and
+  University of Manchester, UK
+  \and
+  EasyChair
+}
+
+%
+
+\maketitle              % typeset the header of the contribution
+%
+%\vspace*{-1.3em}
+\begin{abstract}
+%\keywords{First keyword  \and Second keyword \and Another keyword.}
+\end{abstract}
+
+\section{Introduction}
+\input{intro.tex}
+
+\section{Preliminaries}
+\input{preliminaries.tex}
+
+\section{Motivating Example}
+\label{sec:motivating}
+\input{motivating_example.tex}
+
+\section{Function definitions and Structural Induction Improvements}
+\label{sec:fn_defs}
+\input{function_defs.tex}
+
+\section{Function definition rewriting}
+\label{sec:fn_def_rewriting}
+\input{function_def_rewriting.tex}
+
+\section{Experiments}
+\label{sec:experiments}
+\input{experiments.tex}
+
+\section{Related Work}
+\input{related_work.tex}
+
+\section{Conclusions}
+
+\section*{Acknowledgements}
+
+%
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+% \bibliographystyle{splncs04}
+% \bibliography{mybibliography}
+%
+
+\bibliographystyle{splncs04}
+\bibliography{bib}
+ 
+\end{document}
+

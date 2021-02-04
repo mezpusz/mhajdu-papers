@@ -1,0 +1,7 @@
+% !TeX root = ./paper.tex
+
+One important ingredient in inductive reasoning is coming up with the right induction formulas. However, an induction formula is useless if the inference rules prohibit rewriting function terms in inductive step and base cases, either because a function term cannot be expanded into its definition or a necessary induction hypothesis cannot be used, ultimately leading to a stuck proof.
+
+In particular, superposition and demodulation rules only apply when an equality obeys term, literal and clause orderings s.t. the resulting superposed or demodulated clause is smaller than the rewritten premise. For instance, the following function definition for flattening a binary tree into a list contains two branches, one of which cannot be oriented in the right way to be able to 
+
+%$$\fltn(\bnode(\sigma_0,\sigma_1,\sigma_2))\append\sigma_3\neq\fltn_2(\bnode(\sigma_0,\sigma_1,\sigma_2),\sigma_3)$$
