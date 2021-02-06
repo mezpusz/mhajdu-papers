@@ -1,7 +1,35 @@
 % !TeX root = ./paper.tex
 
-One important ingredient in inductive reasoning is coming up with the right induction formulas. However, an induction formula is useless if the inference rules prohibit rewriting function terms in inductive step and base cases, either because a function term cannot be expanded into its definition or a necessary induction hypothesis cannot be used, ultimately leading to a stuck proof.
+Interpreted functions are often axiomatized in a definitional form, meaning that given these axioms for a well-founded function $f$, any occurrence of $f$ in a ground function term can be completely eliminated. In this paper, we consider well-founded (terminating) functions that are \textit{not mutually-recursive}. Although handling \textit{recursive} functions needs a bit of precaution because expanding any non-ground recursive function term into its definition may lead to a rewrite loop, we treat non-recursive functions the same since they can be thought of as functions that contain only base cases.
+\subsection{Induction templates and schemes}
+In this section, we look at well-defined and well-founded function definitions and use them to obtain induction formulas. A function definition is a set of axioms of the form
+$$F\rightarrow f(s_1,...,s_n)def=t$$
+each containing one branch of execution for $f$ where $F$ is the guard condition for this branch and $s_1,...,s_n$ are constructor terms or variables. For now, we treat the detection of such function definitions as a black box and address this issue later. An argument position $1\le i\le n$ of $f$ is an \textit{active argument position} if there is a definitional axiom of $f$ s.t. for some $f(t_1,...,t_n)\trianglelefteq t$ and $s_i\neq t_i$. Given a literal $L$, we mark its \textit{active subterms} inductively as follows:
+\begin{itemize}
+	\item if $L$ is an equality $l=r$, then $l$ and $r$ are active subterms
+	\item if $L$ is a predicate $p(s_1,...,s_n)$ with active argument positions $I$, then (1) if $I\neq\emptyset$ all $s_i$ with $i\in I$ are active subterms of $L$, (2) otherwise all $s_1,...,s_n$ are active subterms of $L$
+	\item if $f(s_1,...,s_n)$ is an active subterm of $L$ for an $f$ with active argument positions $I$, then (1) if $I\neq\emptyset$ all $s_i$ with $i\in I$ are active subterms of $L$, (2) otherwise all $s_1,...,s_n$ are active subterms of $L$
+	\item if $c(t_1,...,t_m)$ is an active constructor subterm of $L$ of type $\tau$, all $t_j$ with type $\tau$ are active subterms of $L$
+\end{itemize}
+Every active subterm of a literal is a potential candidate for induction since replacing these terms with some constructor term can start a cascade of simplifications, which is needed to solve base cases and to eventually use induction hypotheses in step cases. Since functions can recurse on multiple arguments, instead of create an induction formula for each active subterm, we look at each active function subterm $f(s_1,...,s_n)$ that have a non-empty active argument position set $I$ and create induction formulas from their active subterms.
 
-In particular, superposition and demodulation rules only apply when an equality obeys term, literal and clause orderings s.t. the resulting superposed or demodulated clause is smaller than the rewritten premise. For instance, the following function definition for flattening a binary tree into a list contains two branches, one of which cannot be oriented in the right way to be able to 
+In order to create an induction formula, we need to (1) create a case distinction on the induction terms that is exhaustive and non-overlapping (and can contain guard conditions) and (2) create induction hypotheses for the step cases. For both, we create substitutions that map each induction term to some constructor term in the current case and induction hypothesis. For the case distinction, we use the definitional axioms which are by assumption well-defined.
 
-%$$\app(\fltn(\bnode(\sigma_0,\sigma_1,\sigma_2)),\sigma_3)\neq\fltn_2(\bnode(\sigma_0,\sigma_1,\sigma_2),\sigma_3)$$
+An issue however is that there may be function terms containing only complex terms in their active argument positions. E.g. in $x\leq y+x$, both arguments of the outermost function $\leq$ are active but only the first argument of $+$ is active, therefore it is essential to induct on both $x$ and $y$. The other possibility is to induct on $y+x$ from the second position which would render the original true literal false. To solve this issue, we create tuples of possible induction terms for each such function term by taking every combination of active subterms of $s_i$ for all $i\in I$ (the set of active argument positions). In the above example, this yields $(x,y)$ and $(x,y+x)$ as possible induction term tuples of which only one will be successful. We can create from them and the axioms of $\leq$ the following case distinctions by mapping each tuple element to the corresponding argument in the function's axioms:
+$$\begin{matrix}\begin{Bmatrix}
+\{x\mapsto 0, y\mapsto z\},\\
+\{x\mapsto s(z), y\mapsto 0\},\\
+\{x\mapsto s(z), y\mapsto s(u)\}
+\end{Bmatrix}\begin{Bmatrix}
+\{x\mapsto 0, y+x\mapsto z\},\\
+\{x\mapsto s(z), y+x\mapsto 0\},\\
+\{x\mapsto s(z), y+x\mapsto s(u)\}
+\end{Bmatrix}\end{matrix}$$
+The next step is to add induction hypotheses where possible -- an axiom $F\rightarrow f(x_1,...,x_n)=t$ gives induction hypotheses for the corresponding case in the case distinction if there are recursive calls in $t$. Each such recursive call gives rise to a substitution the same way as in the case distinctions. For $\leq$, only the last case has a recursive call, and it gives substitutions $\{x\mapsto z,y\mapsto u\}$ and $\{x\mapsto z,y+x\mapsto u\}$ for the above two induction term tuples.
+\todo{add guard conditions}
+
+The substitutions obtained this way may not be confluent or well-defined. For example, substituting different terms for the same induction term only works if the substituted terms can be unified and each will be matched by the function definitions of the current function term after applying the subtitution. If this case has induction hypotheses, the unifications are applied also on the substituted terms for the same induction term in them. It may be that some cases or induction hypotheses are not unifiable this way -- any such cases are discarded.
+
+\begin{example}
+	A function term $f(t,t)$ and axiom $f(\bnode(\bnil,y,z),\bnode(u,v,w))=g(f(z,u))$ gives a case where both $\bnode(\bnil,y,z)$ and $\bnode(u,v,w)$ would be substituted for $t$. This conflict can be resolved by using the unification of the two $\bnode(\bnil,y,z)$. However, in the recursive call, after applying the unification on $z$ and $u$, they are still not the same, so the induction hypothesis is discarded.
+\end{example}

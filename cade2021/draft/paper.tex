@@ -5,6 +5,7 @@
 \documentclass[runningheads]{llncs}
 %
 \usepackage{amsmath}
+\usepackage{mathtools}
 \usepackage{amssymb}
 \usepackage{rotating}
 \usepackage{array}
@@ -16,9 +17,10 @@
 \usepackage{xargs}
 \usepackage{adjustbox}
 \usepackage{proof}
+\usepackage{cancel}
 \usepackage{hyperref}
 \usepackage{tabularx}
-%\usepackage{times}
+\usepackage{mdframed}
 
 \makeatletter
 %\renewcommand\section{\@startsection{section}{1}{\z@}%
@@ -40,7 +42,7 @@
 
 \begin{document}
 %
-\title{Even Better Induction in Superposition Reasoning}
+\title{Structural Induction in Superposition Reasoning}
 %
 \titlerunning{ }
 % If the paper title is too long for the running head, you can set
@@ -73,20 +75,22 @@
 \section{Introduction}
 \input{intro.tex}
 
-\section{Preliminaries}
-\input{preliminaries.tex}
-
-\section{Motivating Example}
+\section{Motivating Examples}
 \label{sec:motivating}
 \input{motivating_example.tex}
 
-\section{Function definitions and Structural Induction Improvements}
+\section{Preliminaries}
+\input{preliminaries.tex}
+
+\section{Function definitions and Structural Induction}
 \label{sec:fn_defs}
 \input{function_defs.tex}
 
-\section{Function definition rewriting}
+\section{Function definition rewriting in Superposition}
 \label{sec:fn_def_rewriting}
 \input{function_def_rewriting.tex}
+
+\section{Induction in Saturation-based proof search}
 
 \section{Experiments}
 \label{sec:experiments}

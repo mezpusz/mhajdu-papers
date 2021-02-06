@@ -17,21 +17,34 @@
 \newcommand\ziprewrite{\solver{ZipRewrite}}
 
 % datatypes, logic level functions, ect
-\newcommand\nat{\mathbb N}
-\newcommand\lst{\mathbb L}
-\newcommand\btree{\mathbb T}
+\newcommand\nat{\mathtt{nat}}
+\newcommand\suc{\mathtt{s}}
+\newcommand\pre{\mathtt{p}}
+
+\newcommand\lst{\mathtt{lst}}
+\newcommand\nil{\mathtt{nil}}
+\newcommand\cons{\mathtt{cons}}
+\newcommand\head{\mathtt{head}}
+\newcommand\tail{\mathtt{tail}}
+
+\newcommand\btree{\mathtt{bt}}
+\newcommand\bnil{\mathtt{leaf}}
+\newcommand\bnode{\mathtt{node}}
+\newcommand\bleft{\mathtt{l}}
+\newcommand\bval{\mathtt{v}}
+\newcommand\bright{\mathtt{r}}
+
+% functions and predicates
 % \newcommand\append{\texttt{++}}
 \newcommand\append{\mathrel{ +\hspace{-1mm}+ }}
-\newcommand\cons{\mathtt{cons}}
-\newcommand\nil{\mathtt{nil}}
 \newcommand\prefix{\mathtt{prefix}}
 \newcommand\even{\mathtt{even}}
-\newcommand\suc{\mathtt{s}}
+
 \newcommand\fltn{\mathtt{fltn}}
-\newcommand\bnode{\mathtt{node}}
-\newcommand\bnil{\mathtt{leaf}}
 \newcommand\objEq{=}
 \newcommand\bool{\mathrm{bool}}
+\newcommand\fneq{\mathrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\newcommand\tab{\phantom{  }}
 
 %math notation
 \newcommand\s[1]{\{#1\}}

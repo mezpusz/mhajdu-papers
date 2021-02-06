@@ -1,9 +1,53 @@
 % !TeX root = ./paper.tex
 
+\begin{figure}
+\begin{mdframed}
+	$$\begin{aligned}&\nat:=0 \mid \suc(\pre(\nat))\\
+	&\lst:=\nil\mid\cons(\head(\nat),\tail(\lst))\\
+	&\btree:=\bnil \mid \bnode(\bleft(\btree),\bval(\nat),\bright(\btree))\end{aligned}$$
+\end{mdframed}
+\caption{Inductive datatypes used}
+\label{fig:datatypes}
+\end{figure}
+\begin{figure}
+\begin{minipage}[t]{0.4\textwidth}
+	$$\begin{aligned}&\forall y.0+y:=y\\
+	&\forall x,y.\suc(x)+y:=\suc(x+y)\\
+	\end{aligned}$$
+	\hrule
+	$$\begin{aligned}&\even(0):=\top\\
+	&\even(\suc(0)):=\bot\\
+	&\forall x.\even(\suc(\suc(x))):=\even(x)\\
+	\end{aligned}$$
+	\hrule
+	$$\begin{aligned}&\forall x.0\leq x:=\top\\
+	&\forall x.\suc(x)\leq 0:=\bot\\
+	&\forall x,y.\suc(x)\leq \suc(y):=x\leq y\\
+	\end{aligned}$$
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+	$$\begin{aligned}&\forall x.\nil\append x:=x\\
+	&\forall x,y,z.\cons(x,y)\append z:=\cons(x,y\append z)\\
+	\end{aligned}$$
+	\hrule
+	$$\begin{aligned}
+	&\fltn(\bnil):=\nil\\
+	&\forall u,v,w.\fltn(\bnode(u,v,w)):=\\&\quad\fltn(u)\append\cons(v,\fltn(w))
+	\end{aligned}$$
+	\hrule
+	$$\begin{aligned}
+	&\forall x.\fltn_2(\bnil,x):=x\\
+	&\forall u,v,w,y.\fltn_2(\bnode(u,v,w),y):=\\&\quad\fltn_2(u,\cons(v,\fltn_2(w,y)))
+	\end{aligned}$$
+\end{minipage}
+\caption{Recursive function definitions used}
+\label{fig:functions}
+\end{figure}
+
 Finding an induction formula that leads to a successful proof for an inductive problem is known to be undecidable. Some provers like ACL2 or IsaPlanner take into account the structure of any function present in an inductive goal when creating induction formulas and provide heuristics to select the most suitable one as the next proof step. Such heuristics are however still relatively uncommon in saturation-based theorem provers.
 \begin{example}\label{ex:1}
 $$\forall x,y. (\mathtt{even}(x)\land \mathtt{even}(y))\rightarrow \mathtt{even}(x+y)$$
-The function definitions for $\mathtt{even}$ and + can be found in Figure ??. Negating and clausifying this conjecture yields:
+The function definitions for $\mathtt{even}$ and + can be found in Figure \ref{fig:functions}. Negating and clausifying this conjecture yields:
 $$\begin{Bmatrix}
 \{\even(\sigma_0)\},\{\even(\sigma_1)\},\{\neg\even(\sigma_0+\sigma_1)\}
 \end{Bmatrix}$$
@@ -29,7 +73,7 @@ In this paper, we introduce some basic preprocessing of function definitions to 
 In a saturation-based theorem prover, even the "correct" induction formula is useless if the inference rules prohibit rewriting function terms in inductive step and base cases, either because a function term cannot be expanded into its definition or a necessary induction hypothesis cannot be used, ultimately leading to a stuck proof.
 \begin{example}
 	Given a unit-clause:
-	$$\{\fltn(\sigma_0,\nil)\neq\fltn_2(\sigma_0)$$
+	$$\{\fltn(\sigma_0)\append\sigma_1\neq\fltn_2(\sigma_0,\sigma_1)\}$$
 	Proving the literal in this clause inductively leads to a simple case distinction in the induction formula with a base case $\bnil$ and a step case $\bnode(u,v,w)$ with induction hypotheses $u$ and $v$. However, due to the large terms on the right-hand side of function definitions $\fltn$ and $\fltn_2$ for case $\bnode(u,v,w)$, the induction step conclusion cannot be simplified:
-	$$\fltn(\bnode(\sigma_0,\sigma_1,\sigma_2))\append\sigma_3\neq\fltn_2(\bnode(\sigma_0,\sigma_1,\sigma_2),\sigma_3)$$
+	$$\fltn(\bnode(\sigma_2,\sigma_3,\sigma_4))\append\sigma_1\neq\fltn_2(\bnode(\sigma_2,\sigma_3,\sigma_4),\sigma_1)$$
 \end{example}

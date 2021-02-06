@@ -1,7 +1,34 @@
 % !TeX root = ./paper.tex
 
-One important ingredient in inductive reasoning is coming up with the right induction formulas. However, an induction formula is useless if the inference rules prohibit rewriting function terms in inductive step and base cases, either because a function term cannot be expanded into its definition or a necessary induction hypothesis cannot be used, ultimately leading to a stuck proof.
+As discussed in Section \ref{sec:motivating}, any function definition $f(\overline{x})\fneq t$ may be oriented in a different way in a superposition theorem prover due to $t\succ f(\overline{x})$ given by the ordering. The choices we have here is either not being able to simplify induction formulas or losing completeness.
 
-In particular, superposition and demodulation rules only apply when an equality obeys term, literal and clause orderings s.t. the resulting superposed or demodulated clause is smaller than the rewritten premise. For instance, the following function definition for flattening a binary tree into a list contains two branches, one of which cannot be oriented in the right way to be able to 
+One solution is to choose an ordering that orients all function definitions according to their intended usage. Although this task is in general undecidable \cite{terminating}, such an ordering can be found e.g. for KBO in polynomial time if it exists \cite{kbodecidability,kbopolynomial}. However, even if the initial orientation exists, there may be new function definitions derived from the initial ones that need to be oriented on the fly which is not practically achievable. Otherwise, conflicting orientations of two variants for the same function definition can cause an infinite chain of rewriting.
 
-%$$\fltn(\bnode(\sigma_0,\sigma_1,\sigma_2))\append\sigma_3\neq\fltn_2(\bnode(\sigma_0,\sigma_1,\sigma_2),\sigma_3)$$
+Another solution is to allow rewriting according to the intended function definition orientation and at the same time disallow any inferences that would rewrite the function definitions themselves, creating new variants. Despite losing completeness in this case, depending on factors like whether we use constructor- or destructor-style function definitions, it can actually help discard inferences which we would not be used anyways, e.g. any instantiated variant for a function definition just creates redundancy in the search space.
+
+We use this latter solution and we disallow any inferences with such function definition clauses except for rewriting with two special inference rules: one is a modified \textit{paramodulation}, the other is a special case of \textit{demodulation}. We let the special demodulation happen only if the function definition is a unit clause and it has an orientation which is simplifying w.r.t. the ordering $\succ$:
+\begin{equation}
+	\infer[\small{(\texttt{DemF})}]{L[t\theta]\lor D}
+	{f(\overline{x})=t & \cancel{L[f(\overline{x})\theta]\lor D}}
+\end{equation}
+where $f(\overline{x})=t$ is a function definition, moreover $f(\overline{x})\theta\succ t\theta$ and $L[f(\overline{x})\theta]\lor D\succ f(\overline{x})\theta=t\theta$. Since for functions containing no mutually recursive functions, the function "dependency tree" is a DAG, it is expected that this rule can be used at least for the base cases of any function definition since those definitions can be oriented in the right way by simply creating a precedence from the DAG.
+
+Second, all other non-simplifying rewriting with function definitions is done with the modified paramodulation rule:
+\begin{equation}
+\infer[\small{(\texttt{ParF})}]{L[t\theta]\lor C\theta\lor D}{f(\overline{x})=t\lor C & L[f(\overline{x})\theta]\lor D}
+\end{equation}
+where $f(\overline{x})=t$ is a function definition. This rule has no additional side conditions so that we can rewrite any part of a clause. This will help expand function headers when needed but at the same time we lose properties such as fairness or completeness.
+
+Note that we only use clauses for such rewriting that contain exactly one equality literal marked as a function definition. One might define e.g. non-determinism with clauses containing more than one equality:
+$$\mathtt{f}(\overline{x})=t_1\lor \mathtt{f}(\overline{x})=t_2$$
+We avoid handling such clauses in this manner as it is unclear how the other literal should be used in the resulting clause when we paramodulate with one of them.
+%\begin{example}{continued}
+%	In Example \ref{flatten-example}, the two functions \fltn and $\fltn_2$ give the four definitional axioms:
+%	$$\fltn(\bnil)=\nil$$
+%	$$\forall x,y,z.\fltn(\bnode(x,y,z))=\app(\fltn(x),\cons(y,\fltn(z)))$$
+%	$$\forall y. \fltn_2(\bnil,y)=y$$
+%	$$\forall x,y,z,u.\fltn_2(\bnode(x,y,z),u)=\fltn_2(x,\cons(y,\fltn_2(z, u)))$$
+%	The base cases for the two functions can be easily oriented the "right way", i.e. to rewrite any terms such as $\fltn(\bnil)$ into \nil or $\fltn_2(\bnil,y)$ into $y$, the first by making \fltn or \bnil greater than \nil in the precedence accompanying the ordering, the second by applying the subterm property of a simplification ordering. The recursive cases, however, cannot be oriented in such a way easily, so e.g. the refutational variant of the induction step consequent from Example \ref{flatten-example}
+%	$$\app(\fltn(\bnode(\sigma_0,\sigma_1,\sigma_2)),\sigma_3)\neq\fltn_2(\bnode(\sigma_0,\sigma_1,\sigma_2),\sigma_3)$$
+%	would not be rewritten normally and the induction gets stuck. Instead, applying the rule (\func{ParF}) with the recursive axioms, we match the terms $\fltn(\bnode(\sigma_0,\sigma_1,\sigma_2)$ with $\fltn(\bnode(x,y,z))$ and $\fltn_2(\bnode(\sigma_0,\sigma_1,\sigma_2),\sigma_3)$ with $\fltn_2(\bnode(x,y,z),u)$ with substitution $\{x\mapsto \sigma_0,y\mapsto \sigma_1, z\mapsto\sigma_2, u\mapsto \sigma_3\}$.
+%\end{example}
