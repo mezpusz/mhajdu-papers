@@ -1,0 +1,59 @@
+% !TeX root = ./paper.tex
+
+
+\begin{figure}
+	\centering
+	\begin{tabular}[c]{c|c|c|c|c|c|c|c}
+		\multicolumn{3}{c}{ } & \rot{30}{\textsc{Vampire}} & \rot{30}{$\textsc{Vampire}^{\ast\ast}$} & \rot{30}{$\textsc{Vampire}^{\dag}$} & \rot{30}{\textsc{CVC4}} & \rot{30}{\textsc{ZipperPosition}} \\ \hline
+		\multicolumn{2}{c|}{Problems} & Count & \multicolumn{5}{c}{Solved problems} \\ \hline
+		\multirow{3}{*}{$\lst$} & $\append$ & 313 & \cellcolor{blue!11!white}72 & \cellcolor{blue!38!white}238 & \cellcolor{blue!50!white}313 & \cellcolor{blue!0!white}1 & \cellcolor{blue!49!white}312\\
+		& \texttt{pref} & 696 & \cellcolor{blue!6!white}94 & \cellcolor{blue!49!white}687 & \cellcolor{blue!50!white}696 & \cellcolor{blue!0!white}1 & \cellcolor{blue!41!white}583\\
+		& $\rev$ & 4 & \cellcolor{blue!25!white}2 & \cellcolor{blue!25!white}2 & \cellcolor{blue!37!white}3 & \cellcolor{blue!0!white}0 & \cellcolor{blue!25!white}2\\
+		\hline
+		\multirow{9}{*}{$\nat$} & + assoc & 312 & \cellcolor{blue!12!white}81 & \cellcolor{blue!41!white}261 & \cellcolor{blue!50!white}312 & \cellcolor{blue!0!white}1 & \cellcolor{blue!50!white}312\\
+		& + mix & 830 & \cellcolor{blue!6!white}103 & \cellcolor{blue!15!white}263 & \cellcolor{blue!35!white}591 & \cellcolor{blue!4!white}70 & \cellcolor{blue!33!white}552\\
+		& + comm & 2 & \cellcolor{blue!50!white}2 & \cellcolor{blue!50!white}2 & \cellcolor{blue!50!white}2 & \cellcolor{blue!25!white}1 & \cellcolor{blue!50!white}2\\
+		& $+ \suc 0$ mix & 486 & \cellcolor{blue!8!white}81 & \cellcolor{blue!12!white}124 & \cellcolor{blue!28!white}281 & \cellcolor{blue!8!white}87 & \cellcolor{blue!19!white}186\\
+		& $\cdot$ & 6 & \cellcolor{blue!0!white}0 & \cellcolor{blue!0!white}0 & \cellcolor{blue!16!white}2 & \cellcolor{blue!0!white}0 & \cellcolor{blue!0!white}0\\
+		& $\even$ & 2 & \cellcolor{blue!0!white}0 & \cellcolor{blue!0!white}0 & \cellcolor{blue!25!white}1 & \cellcolor{blue!0!white}0 & \cellcolor{blue!0!white}0\\
+		& $\simeq$ & 4 & \cellcolor{blue!25!white}2 & \cellcolor{blue!37!white}3 & \cellcolor{blue!37!white}3 & \cellcolor{blue!25!white}2 & \cellcolor{blue!50!white}4\\
+		& $\leq$ & 696 & \cellcolor{blue!8!white}117 & \cellcolor{blue!50!white}696 & \cellcolor{blue!50!white}696 & \cellcolor{blue!0!white}1 & \cellcolor{blue!41!white}583\\
+		& $\dup$ & 1 & \cellcolor{blue!0!white}0 & \cellcolor{blue!0!white}0 & \cellcolor{blue!0!white}0 & \cellcolor{blue!0!white}0 & \cellcolor{blue!0!white}0\\
+		\hline
+		\multirow{1}{*}{$\btree$} & $\fltn$ & 3 & \cellcolor{blue!0!white}0 & \cellcolor{blue!0!white}0 & \cellcolor{blue!33!white}2 & \cellcolor{blue!16!white}1 & \cellcolor{blue!33!white}2\\
+		\hline
+		\multirow{1}{*}{$\nat\&\lst$} & $+\&\append$ & 1 & \cellcolor{blue!50!white}1 & \cellcolor{blue!50!white}1 & \cellcolor{blue!50!white}1 & \cellcolor{blue!0!white}0 & \cellcolor{blue!0!white}0\\
+		\hline
+		\multicolumn{2}{c|}{UFDTLIA} & 327 & \cellcolor{blue!22!white}144 & \cellcolor{blue!22!white}149 & \cellcolor{blue!26!white}176 & \cellcolor{blue!32!white}214 & -\\
+		\hhline{|=|=|=|=|=|=|=|=|}
+		\multicolumn{2}{c|}{All} & 3683 & \cellcolor{blue!9!white}699 & \cellcolor{blue!33!white}2426 & \cellcolor{blue!42!white}3079 & \cellcolor{blue!5!white}379 & \cellcolor{blue!38!white}2538\\
+		\hline
+		\multicolumn{8}{c}{ }\\
+		\hline
+		\multicolumn{2}{c|}{Problems} & Count & \multicolumn{5}{c}{Uniquely solved problems} \\ \hline
+		\multirow{3}{*}{$\lst$} & $\append$ & 313 & 0 & 0 & \cellcolor{gray!20!white}1 & 0 & 0\\
+		& $\pref$ & 696 & 0 & 0 & 0 & 0 & 0\\
+		& $\rev$ & 4 & 0 & 0 & \cellcolor{gray!20!white}1 & 0 & 0\\
+		\hline
+		\multirow{9}{*}{$\nat$} & + assoc & 312 & 0 & 0 & 0 & 0 & 0\\
+		& + mix & 830 & \cellcolor{gray!20!white}2 & 0 & \cellcolor{gray!20!white}116 & 0 & \cellcolor{gray!20!white}93\\
+		& + comm & 2 & 0 & 0 & 0 & 0 & 0\\
+		& $+ \suc 0$ mix & 486 & 0 & 0 & \cellcolor{gray!20!white}95 & 0 & \cellcolor{gray!20!white}3\\
+		& $\cdot$ & 6 & 0 & 0 & \cellcolor{gray!20!white}2 & 0 & 0\\
+		& $\even$ & 2 & 0 & 0 & \cellcolor{gray!20!white}1 & 0 & 0\\
+		& $\simeq$ & 4 & 0 & 0 & 0 & 0 & 0\\
+		& $\leq$ & 696 & 0 & 0 & 0 & 0 & 0\\
+		& $\dup$ & 1 & 0 & 0 & 0 & 0 & 0\\
+		\hline
+		\multirow{1}{*}{$\btree$} & $\fltn$ & 3 & 0 & 0 & 0 & 0 & 0\\
+		\hline
+		\multirow{1}{*}{$\nat\&\lst$} & $+\&\append$ & 1 & 0 & 0 & 0 & 0 & 0\\
+		\hline
+		\multicolumn{2}{c|}{UFDTLIA} & 327 & \cellcolor{gray!20!white}2 & 0 & \cellcolor{gray!20!white}9 & \cellcolor{gray!20!white}50 & -\\
+		\hhline{|=|=|=|=|=|=|=|=|}
+		\multicolumn{2}{c|}{All} & 3683 & \cellcolor{gray!20!white}4 & 0 & \cellcolor{gray!20!white}225 & \cellcolor{gray!20!white}50 & \cellcolor{gray!20!white}96\\
+		\hline
+	\end{tabular}
+	\caption{\textsc{Vampire} with and without portfolio mode and other solvers compared}
+	\label{fig:comparison3}
+\end{figure}
