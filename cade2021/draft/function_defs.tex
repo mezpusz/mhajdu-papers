@@ -1,35 +1,105 @@
 % !TeX root = ./paper.tex
 
 Interpreted functions are often axiomatized in a definitional form, meaning that given these axioms for a well-founded function $f$, any occurrence of $f$ in a ground function term can be completely eliminated. In this paper, we consider well-founded (terminating) functions that are \textit{not mutually-recursive}. Although handling \textit{recursive} functions needs a bit of precaution because expanding any non-ground recursive function term into its definition may lead to a rewrite loop, we treat non-recursive functions the same since they can be thought of as functions that contain only base cases.
-\subsection{Induction templates and schemes}
+\subsection{Generating induction formulas from function definitions}\label{sec:generating}
 In this section, we look at well-defined and well-founded function definitions and use them to obtain induction formulas. A function definition is a set of axioms of the form
-$$F\rightarrow f(s_1,...,s_n)def=t$$
-each containing one branch of execution for $f$ where $F$ is the guard condition for this branch and $s_1,...,s_n$ are constructor terms or variables. For now, we treat the detection of such function definitions as a black box and address this issue later. An argument position $1\le i\le n$ of $f$ is an \textit{active argument position} if there is a definitional axiom of $f$ s.t. for some $f(t_1,...,t_n)\trianglelefteq t$ and $s_i\neq t_i$. Given a literal $L$, we mark its \textit{active subterms} inductively as follows:
+$$F\rightarrow f(s_1,...,s_n):=t$$
+each containing one branch of execution for $f$ where $F$ is the guard condition for this branch and $s_1,...,s_n$ are constructor terms or variables. For now, we treat the detection of such function definitions as a black box and address this issue later. An argument position $1\le i\le n$ of $f$ is an \textit{active argument position} if there is an axiom like above of $f$ s.t. for some $f(t_1,...,t_n)\trianglelefteq t$ and $s_i\neq t_i$. Given a literal $L$, we mark its \textit{active subterms} inductively as follows:
 \begin{itemize}
 	\item if $L$ is an equality $l=r$, then $l$ and $r$ are active subterms
 	\item if $L$ is a predicate $p(s_1,...,s_n)$ with active argument positions $I$, then (1) if $I\neq\emptyset$ all $s_i$ with $i\in I$ are active subterms of $L$, (2) otherwise all $s_1,...,s_n$ are active subterms of $L$
 	\item if $f(s_1,...,s_n)$ is an active subterm of $L$ for an $f$ with active argument positions $I$, then (1) if $I\neq\emptyset$ all $s_i$ with $i\in I$ are active subterms of $L$, (2) otherwise all $s_1,...,s_n$ are active subterms of $L$
 	\item if $c(t_1,...,t_m)$ is an active constructor subterm of $L$ of type $\tau$, all $t_j$ with type $\tau$ are active subterms of $L$
 \end{itemize}
-Every active subterm of a literal is a potential candidate for induction since replacing these terms with some constructor term can start a cascade of simplifications, which is needed to solve base cases and to eventually use induction hypotheses in step cases. Since functions can recurse on multiple arguments, instead of create an induction formula for each active subterm, we look at each active function subterm $f(s_1,...,s_n)$ that have a non-empty active argument position set $I$ and create induction formulas from their active subterms.
+\todo{should we exclude non-recursive function terms here? it is sometimes good to induct on them (which is just a case distinction) but otherwise it can be confusing to introduce this here}
 
-In order to create an induction formula, we need to (1) create a case distinction on the induction terms that is exhaustive and non-overlapping (and can contain guard conditions) and (2) create induction hypotheses for the step cases. For both, we create substitutions that map each induction term to some constructor term in the current case and induction hypothesis. For the case distinction, we use the definitional axioms which are by assumption well-defined.
+Every active subterm of a literal is a potential candidate for induction since replacing these terms with some constructor term can start a cascade of simplifications, which is needed to solve base cases and to eventually use induction hypotheses in step cases. Functions can recurse on multiple arguments, so instead of create an induction formula for each active subterm, we look at each active function subterm $f(s_1,...,s_n)$ that have a non-empty active argument position set $I$ and create induction formulas from their active subterms.
 
-An issue however is that there may be function terms containing only complex terms in their active argument positions. E.g. in $x\leq y+x$, both arguments of the outermost function $\leq$ are active but only the first argument of $+$ is active, therefore it is essential to induct on both $x$ and $y$. The other possibility is to induct on $y+x$ from the second position which would render the original true literal false. To solve this issue, we create tuples of possible induction terms for each such function term by taking every combination of active subterms of $s_i$ for all $i\in I$ (the set of active argument positions). In the above example, this yields $(x,y)$ and $(x,y+x)$ as possible induction term tuples of which only one will be successful. We can create from them and the axioms of $\leq$ the following case distinctions by mapping each tuple element to the corresponding argument in the function's axioms:
-$$\begin{matrix}\begin{Bmatrix}
-\{x\mapsto 0, y\mapsto z\},\\
-\{x\mapsto s(z), y\mapsto 0\},\\
-\{x\mapsto s(z), y\mapsto s(u)\}
-\end{Bmatrix}\begin{Bmatrix}
-\{x\mapsto 0, y+x\mapsto z\},\\
-\{x\mapsto s(z), y+x\mapsto 0\},\\
-\{x\mapsto s(z), y+x\mapsto s(u)\}
-\end{Bmatrix}\end{matrix}$$
-The next step is to add induction hypotheses where possible -- an axiom $F\rightarrow f(x_1,...,x_n)=t$ gives induction hypotheses for the corresponding case in the case distinction if there are recursive calls in $t$. Each such recursive call gives rise to a substitution the same way as in the case distinctions. For $\leq$, only the last case has a recursive call, and it gives substitutions $\{x\mapsto z,y\mapsto u\}$ and $\{x\mapsto z,y+x\mapsto u\}$ for the above two induction term tuples.
-\todo{add guard conditions}
+In order to create an induction formula, we create (1) a case distinction on the induction terms that is exhaustive and non-overlapping (and can contain guard conditions) and (2) induction hypotheses for the step cases. For both, we create substitutions that map each induction term to some constructor term in the current case and induction hypothesis. For the case distinction, we use the function axioms which are by assumption well-defined.
 
-The substitutions obtained this way may not be confluent or well-defined. For example, substituting different terms for the same induction term only works if the substituted terms can be unified and each will be matched by the function definitions of the current function term after applying the subtitution. If this case has induction hypotheses, the unifications are applied also on the substituted terms for the same induction term in them. It may be that some cases or induction hypotheses are not unifiable this way -- any such cases are discarded.
+Sometimes function terms contain only complex terms in their active argument positions and generalizing over them does not always lead to a proof. E.g. in $s\leq t+s$, both arguments of the outermost function $\leq$ are active but only the first argument of $+$ is active, therefore it is essential to induct on both $s$ and $t$. The other possibility is to induct on $t+s$ from the second position which would render the original true literal false.
+
+To solve this issue, we create tuples of possible induction terms for each such function term by taking every combination of active subterms of $s_i$ for all $i\in I$ (the set of active argument positions). In the above example, this yields $(s,t)$ and $(s,t+s)$ as possible induction term tuples. We can create from them and the axioms of $\leq$ the following case distinctions by mapping each tuple element to the corresponding argument in the function's axioms:
+$$\begin{aligned}
+&\forall x.\textcolor{blue}{0}\leq \textcolor{red}{x}:=\top\quad&\Rightarrow\quad&\{s\mapsto \textcolor{blue}{0}, t\mapsto \textcolor{red}{x}\}\\
+&\forall x.\textcolor{blue}{\suc(x)}\leq \textcolor{red}{0}:=\bot\quad&\Rightarrow\quad&\{s\mapsto \textcolor{blue}{\suc(x)}, t\mapsto \textcolor{red}{0}\},\\
+&\forall x,y.\textcolor{blue}{\suc(x)}\leq \textcolor{red}{\suc(y)}:=x\leq y\quad&\Rightarrow\quad&\{s\mapsto \textcolor{blue}{\suc(x)}, t\mapsto \textcolor{red}{\suc(y)}\}
+\end{aligned}$$
+The next step is to add induction hypotheses where possible -- an axiom $F\rightarrow f(x_1,...,x_n):=t$ gives induction hypotheses for the corresponding case in the case distinction if there are recursive calls in $t$. Each such recursive call gives rise to a substitution the same way as in the case distinctions. For $\leq$, only the last case has a recursive call:
+$$\begin{aligned}
+&\forall x,y.\suc(x)\leq \suc(y):=\textcolor{blue}{x}\leq \textcolor{red}{y}\quad&\Rightarrow\quad&\{s\mapsto \textcolor{blue}{x}, t\mapsto \textcolor{red}{y}\}
+\end{aligned}$$
+
+The obtained substitutions are then applied to the original literal to create the induction formula. The case distinction is the antecedent to the final induction formula where we add a conclusion with each induction term replaced with a fresh variable:
+$$\begin{pmatrix}0\leq x+0\land\forall x.(\suc(x)\leq 0+\suc(x))\land\\
+\forall x,y.(x\leq y+x\rightarrow \suc(x)\leq \suc(y)+\suc(x))\end{pmatrix}\rightarrow \forall u,v.u\leq v+u$$
+
+The substitutions obtained this way may not be confluent or well-defined. For example, substituting different terms for the same induction term only works if the substituted terms can be unified and each will be matched by the function definitions of the current function term after applying the subtitution. If this case has induction hypotheses, the unifications are applied also on the substituted terms for the same induction term in them. It may be that some cases or induction hypotheses are not unifiable this way -- any such cases or hypotheses are discarded. Losing hypotheses this way is not an issue, but losing a case from the induction formula can result in unsoundness.
 
 \begin{example}
-	A function term $f(t,t)$ and axiom $f(\bnode(\bnil,y,z),\bnode(u,v,w))=g(f(z,u))$ gives a case where both $\bnode(\bnil,y,z)$ and $\bnode(u,v,w)$ would be substituted for $t$. This conflict can be resolved by using the unification of the two $\bnode(\bnil,y,z)$. However, in the recursive call, after applying the unification on $z$ and $u$, they are still not the same, so the induction hypothesis is discarded.
+	A function term $f(t,t)$ and axiom $f(\bnode(\bnil,y,z),\bnode(u,v,w)):=g(f(z,u))$ gives a case where both $\bnode(\bnil,y,z)$ and $\bnode(u,v,w)$ would be substituted for $t$. This conflict can be resolved by using the unification of the two $\bnode(\bnil,y,z)$. However, in the recursive call, after applying the unification on $z$ and $u$, they are still not the same, so the induction hypothesis is discarded.
 \end{example}
+
+\subsection{Containment and union of induction formulas}
+Even though there may be multiple induction formulas used for the proof of an inductive goal, the process described in Section \ref{sec:generating} can create many similar or redundant ones. Therefore an important step is to discard the unusable ones and combine the rest if possible. Looking at the Example \ref{ex:1} once again, from the literal $\neg\even(\sigma_0+\sigma_1)$ we can create two induction formulas with Skolem induction terms. One is generated from $\even(\sigma_0+\sigma_1)$:
+\begin{equation}\label{eq:even1}\begin{pmatrix}\even(0+\sigma_1)\land\even(\suc(0)+\sigma_1)\land\\
+\forall z.(\even(z+\sigma_1)\rightarrow\even(\suc(\suc(z))+\sigma_1))\end{pmatrix}\rightarrow \forall u.\even(u+\sigma_1)\end{equation}
+The other is given by $\sigma_0+\sigma_1$:
+\begin{equation}\label{eq:even2}\begin{pmatrix}\even(0+\sigma_1)\land\forall x.(\even(x+\sigma_1)\rightarrow\even(\suc(x)+\sigma_1))\end{pmatrix}\rightarrow \forall z.\even(z+\sigma_1)\end{equation}
+Practically, trying the second formula is a waste of resources as we have already seen in Section \ref{sec:motivating} so we better off discarding it. There are very simple approaches in the literature on which one can base this decision. E.g. ACL2 would discard it because the step case of the first formula is in the \textit{transitive closure} of that of the second. In terms of well-founded relations, the second induction formula is based on the relation $x\prec\suc(x)$ and applying this twice gives us $x\prec\cdot\prec\suc(\suc(x))$, that is, the relation for the first formula.
+
+The reason this works is only incidental -- although the case distinction of $+$ is more general than that of $\even$ and therefore every term in the case distinction of $\even$ will match a function definition of +, the induction hypothesis of the two are completely unrelated and therefore discarding one of them is like flipping a coin before the proof without knowing which one will be needed.
+
+In order not to lose useful structure from the generated induction formulas, our goals are the following: when discarding or combining induction formulas (1) more special case distinctions must be preserved so that all considered function definitions are matched and (2) all induction hypotheses must be preserved since a priori we do not know which ones will be used.
+
+For two induction formulas $F_1$ and $F_2$ with identical case distinctions, $F_1$ \textit{contains} $F_2$ if for each case, the set of induction hypotheses of the case in $F_1$ is a superset of that of $F_2$. If an induction formula is contained by another, we can safely discard it since its case distinction and induction hypotheses can be found in the second.
+\begin{example}
+\end{example}
+
+If two induction formulas do not contain each other, we can either use them separately or use their \texttt{union} instead. The union of two induction formulas provides a case distinction with all cases from the original ones while supplying the necessary induction hypotheses. Given two induction formulas with cases $\mathcal{C}=\{C_i \mid 1\le i\le n\}$ and $\mathcal{D}=\{D_j \mid 1\le j\le m\}$, we can compute the union with the following two approaches:
+\begin{enumerate}
+	\item We can think of the two in terms of well-founded orders and for each pair of subrelations from the first and the second, we compute their intersections. Then, we check whether any subrelation has cases left "outside" the intersections. Finally, we convert this union of orders back to a formula by adding the remaining cases, i.e. the base cases.
+	\item Otherwise, we can simply intersect every case of the two induction formulas putting together their induction hypotheses.
+\end{enumerate}
+\begin{example}
+	Let us look at the case distinction of formulas \eqref{eq:even1} and \eqref{eq:even2} from our running Example \ref{ex:1}.
+
+	\textit{Approach 1.} We convert both formulas to relations $z\prec\suc(\suc(z))$ and $x\prec\suc(x)$, respectively. The intersection of the two is a relation $z,\suc(z)\prec\suc(\suc(z))$. This can be seen as specializing the more general $\suc(x)$ to match only $\suc(\suc(z))$ and putting together the related terms $z$ and $x$, specializing them if needed -- $x$ is specialized to $\suc(z)$.
+
+	Then, we need to check what remains of the original subrelations apart from the intersection. $z\prec\suc(\suc(z))$ is entirely covered by the intersection, this gives no further subrelations. $x\prec\suc(x)$, however, was specialized in the intersection, thus the case where $x$ is 0 is not covered -- this results in $0\prec\suc(0)$.
+
+	Converting this back to an induction formula, to make sure the case distinction is complete, we add base case 0 which is not covered by $\suc(0)$ nor $\suc(\suc(z))$.
+
+	\textit{Approach 2.} We take intersections of each case from \eqref{eq:even1} and \eqref{eq:even2} pairwise:
+	\begin{itemize}
+		\item $0$ and $0$ overlap in $0$. Both are base cases so this results in a base case.
+		\item $0$ and $\suc(x)$ do not overlap.
+		\item $\suc(0)$ and $0$ do not overlap.
+		\item $\suc(0)$ and $\suc(x)$ overlap in $\suc(0)$. The second is a recursive case, so we add the induction hypothesis $0$ which is $x$ specialized to match the overlap.
+		\item $\suc(\suc(z))$ and $0$ do not overlap.
+		\item $\suc(\suc(z))$ and $\suc(x)$ overlap. Both are recursive cases, so we add the two induction hypotheses, specialized where needed ($x$ is specialized to $\suc(z)$).
+	\end{itemize}
+
+	Both approaches give the induction formula:
+	\begin{equation}\begin{pmatrix}\even(0+\sigma_1)\land(\even(0+\sigma_1)\rightarrow\even(\suc(0)+\sigma_1))\land\\
+	\forall z.((\even(z+\sigma_1)\land\even(\suc(z)+\sigma_1))\rightarrow\even(\suc(\suc(z))+\sigma_1))\end{pmatrix}\rightarrow \forall u.\even(u+\sigma_1)\end{equation}
+\end{example}
+
+We note here that it is enough to check pairwise intersections only because the induction formulas (and the functions they are generated from) are thought to be well-defined, so each case distinction is non-overlapping and exhaustive.
+
+One of the advantages of taking the union is that by definition it is guaranteed that each case matches exactly one function axiom for each of the original function terms and the necessary induction hypotheses are also always present. The disadvantages are that it may not be well-founded and that it can create very large induction formulas. It is also not clear when to use it. There are situations when two induction formulas use completely different induction terms. For example, the commutativity of +
+$$\forall x,y.x+y=y+x$$
+can be solved by first inducting on $x$ and then on $y$ or vice versa -- the order is irrelevant. However, in general, depending on the order of simplifications and the axioms used for each function, inducting sequentially on multiple terms can lead to different results.
+
+\subsection{Well-foundedness and well-definedness}
+So far we assumed that every function we are provided with is well-founded and well-defined. Functions that fail to meet this requirement are potential sources of unsoundness. We chose easy-to-check sufficient conditions for both. We base our well-foundedness check on a lexicographic order on the active argument positions of each function and use the subterm relation as elementary property. This can be easily checked with e.g.constructor-style input functions where arguments of inductive sorts on the left-hand side of a function definition are either variables or term algebra constructors. A common example for this is the Ackermann function given by:
+$$\forall y. \ack(0,y)=\suc(y)$$
+$$\forall x.\ack(\suc(x),0):=\ack(x,\suc(0))$$
+$$\forall x,y.\ack(\suc(x),\suc(y)):=\ack(x,\ack(\suc(x),y))$$
+Any function term stemming from a function that is not well-founded is ignored while generating induction formulas.
+
+For well-definedness, we distinguish \textit{under-definedness} and \textit{over-definedness}. The former can lead to missing false cases, thus introducing unsoundness but it can be easily mitigated by adding those missing cases. The latter is a bit more complicated: an induction formula with overlapping cases is not necessarily unsound but it can lead to ill-constructed case distinctions for the union. \todo{anything to add here?}
+
+
+\subsection{Induction hypothesis strengthening}
+\subsection{Generalizing over occurrences and complex terms}

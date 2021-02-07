@@ -17,7 +17,7 @@
 	\hrule
 	$$\begin{aligned}&\even(0):=\top\\
 	&\even(\suc(0)):=\bot\\
-	&\forall x.\even(\suc(\suc(x))):=\even(x)\\
+	&\forall z.\even(\suc(\suc(z))):=\even(z)\\
 	\end{aligned}$$
 	\hrule
 	$$\begin{aligned}&\forall x.0\leq x:=\top\\
@@ -52,11 +52,8 @@ $$\begin{Bmatrix}
 \{\even(\sigma_0)\},\{\even(\sigma_1)\},\{\neg\even(\sigma_0+\sigma_1)\}
 \end{Bmatrix}$$
 One could select the clause $\{\neg\even(\sigma_0+\sigma_1)\}$ for induction and use the simplest induction formula with either $\sigma_0$ or $\sigma_1$ as the induction term. E.g. in the former case, we get:
-$$\begin{pmatrix}\even(0+\sigma_1)\\
-\forall z.\begin{pmatrix}
-\even(z+\sigma_1)\rightarrow\\
-\even(\suc(z)+\sigma_1)
-\end{pmatrix}\end{pmatrix}\rightarrow \forall x.\even(x+\sigma_1)$$
+$$\begin{pmatrix}\even(0+\sigma_1)\land\\
+\forall z.(\even(z+\sigma_1)\rightarrow\even(\suc(z)+\sigma_1))\end{pmatrix}\rightarrow \forall x.\even(x+\sigma_1)$$
 After clausification and binary resolution with given clause, we get:
 $$\begin{Bmatrix}
 \{\neg\even(0+\sigma_1)\lor \even(\sigma_2+\sigma_1)\},\\
