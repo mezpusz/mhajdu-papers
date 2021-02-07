@@ -1,2 +1,101 @@
 % !TeX root = ./paper.tex
 
+We assume a basic textbook familiarity with first-order logic with equality \cite{calculusofcomputation}. We define the \textit{multi-sorted signature} as a set of \textit{function} symbols $\mathcal{F}$ and a set of \textit{predicate} symbols $\mathcal{P}$ together with a set of sorts $\mathcal{S}$. Each symbol is associated with an \textit{arity} and a sort/type and a function with arity of 0 is called a \textit{constant}. We also add $=$ to the language as a binary predicate symbol, $\top$ (true) and $\bot$ (false) as arity 0 predicate symbols and the unary function symbol $srt$ mapping each term to its sort. We denote functions with letters $f$, $g$, $h$ and predicates with letters $p$, $q$, $r$. We use from now on the words \textit{sort} and \textit{type} interchangeably.
+
+Elements of the set of \textit{variables} $\mathcal{V}$ are denoted by $x$, $y$, $z$, possibly with indices. The set of \textit{terms} $\mathcal{T}$ is defined inductively using function symbols and variables. For terms, we use the letters $s$, $t$, etc. We reserve the notation $\sigma$, $\sigma_0$, $\sigma_1$, etc. for Skolem constants. We say that a term is \textit{ground} if it contains no variables. We reserve the notation $\overline{x}$ and $\overline{t}$ for tuples of variables and terms, respectively. \textit{Atoms} are built inductively from terms and predicate symbols. We use the unary logical connective $\neg$ for \textit{negation}. Atoms and their negations are called \textit{literals}. For a literal $l$, we use the notation $\overline{l}$ to denote its opposite sign literal. Moreover, we add binary logical connectives $\lor$, $\land$, $\rightarrow$ and $\leftrightarrow$ for \textit{disjunction}, \textit{conjunction}, \textit{implication} and \textit{equivalence}, respectively and the \textit{universal quantifier} $\forall$ and the \textit{existential quantifier} $\exists$. We use these connectives to build \textit{formulas} from atoms. We may abbreviate $\forall x. srt(x)=\alpha\rightarrow F$ as $\forall x\in\alpha. F$.
+
+Additionally, we say that a set of literals is called a \textit{clause} and treat it as a disjunction of the contained literals. We treat sets of clauses as conjunctions of the clauses. We reserve the symbol $\square$ for the \textit{empty clause} which is logically equivalent to $\bot$. We call every term, literal, clause or formula an \textit{expression}. We use the notation $s\trianglelefteq t$ to denote that $s$ is a \textit{subterm} of $t$ and $s\triangleleft t$ if $s$ is a \textit{proper subterm} of $t$.
+
+We distinguish special sorts called \textit{inductive sorts/types}, function symbols for inductive sorts called \textit{constructors} and \textit{destructors}. We require that the signature contains at least one constant constructor symbol for every inductive type. Such a symbol is called a \textit{base constructor}, while non-constant ones are called \textit{recursive constructors}. We call the ground terms built from the constructor symbols of a sort its \textit{term algebra}. Semantically, each $n$-ary constructor $c$ has $n$ corresponding destructors $d_1,...,d_n$. For any constructor term $c(t_1,...,t_n)$ with root symbol $c$, the following holds:
+$$\forall 1\le i\le n. d_i(c(t_1,...,t_n))=t_i$$
+Moreover, we usually axiomatise every term algebra with the \textit{injectivity}, \textit{distinctness}, \textit{exhaustiveness} and \textit{acyclicity} axioms.
+
+An \textit{interpreted symbol} is a function or predicate whose meaning is defined through axioms, e.g. $=$ is an interpreted symbol in first-order logic with equality. All other symbols are called \textit{uninterpreted}. We distinguish \textit{function/predicate definitions} from regular axioms. These define a branch of computation for a function/predicate. Such axiom is denoted by marking exactly one equality literal in it with $:=$ such as $F\rightarrow l:=r$ which means that the orientation of this equality is fixed as left-to-right, $l$ is a function header and $r$ is a function definition, $F$ is the guard condition for this branch. We abuse this notation for predicate definitions where $:=$ can be replaced with a $\leftrightarrow$.
+
+For the semantics, we use an \textit{interpretation structure} $\mathcal{M}$ which incorporates a non-empty domain or \textit{universe} $\mathcal{D}$ and an \textit{interpretation function} $\mathcal{I}$ for variables, function symbols and predicate symbols. The interpretation of terms and formulas is then built up inductively from this. An interpretation $\mathcal{M}$ is a \textit{model} of a formula $F$ denoted by $\mathcal{M}\models F$ if $F$ evaluates to true in $\mathcal{M}$. Moreover, $F$ is \textit{satisfiable} if it has a model, otherwise if it has no model, it is \textit{unsatisfiable}. $F$ is \textit{valid} if all interpretations are models of it, denoted by $\models F$.
+
+We call a \textit{substitution} $\theta$ a mapping of the form $\{s_1\mapsto t_1, ..., s_n\mapsto t_n\}$ s.t. $s_i\neq s_j$ for all $1\le i, j\le n$, $i\neq j$. An \textit{application of a substitution} on an expression $E$ is denoted by $E\theta$ and corresponds to the expression where all occurrences of $s_i$ are replaced with $t_i$. Another notation is $E[s]$ where we mean there is a distinguished occurrence of the term $s$ in $E$. $E[\cdot]$ then means this particular occurrence of $s$ is replaced by a \textit{hole} and $E[t]$ that the occurrence is changed to a term $t$. We may use this notation also to denote multiple occurrences at the same time. A substitution $\theta$ is a \textit{unifier} of two expressions $E_1$ and $E_2$ if $E_1\theta=E_2\theta$. A unifier $\theta$ is a \textit{most general unifier} (mgu for short) if for all $\theta^\prime$ unifiers of the same expressions, there is a $\theta^\star$ substitution s.t. $\theta^\prime=\theta\theta^\star$.
+
+A \textit{position} is a finite sequence of positive integers, a \textit{root position} is the empty sequence and is denoted by $\epsilon$. We denote the concatenation of two position $p$ and $q$ by $pq$. We use positions in case of terms such that if a term $f(t_1,...,t_n)$ is in position $p$, then term $t_i$ is in position $pi$, for $1\le i\le n$. We denote a subterm of term $t$ in position $p$ by $t|_p$. We extend positions to literals in the following way: a literal is always in position $\epsilon$, moreover an equality $l=r$ has positions 1 and 2, corresponding to $l$ and $r$, respectively and a predicate $p(s_1,...,s_m)$ has positions $1$ to $m$ corresponding to $s_1$ to $s_m$, respectively.
+
+A \textit{binary relation} $R$ on a set $A$ is the subset of the Cartesian product $A\times A$. We usually write $a\ R\ b$ instead of $(a,b)\in R$ to denote that $a$ is related to $b$ w.r.t. $R$. Given two binary relations $R_1$ and $R_2$ on the same set $A$, $R_2\cdot R_1$ denotes the relation s.t. for all pairs $(a,c)\in R_2\cdot R_1$ with $a,c\in A$ there is some $b\in A$ where $(a,b)\in R_2$ and $(b,c)\in R_1$. An \textit{irreflexive relation} $R$ on $A$ is such that $a\ R\ b$ implies $a\neq b$ for any $a,b\in A$. It holds for a \textit{transitive relation} that for any $a,b,c\in A$, $a\ R\ b$ and $b\ R\ c$ entails $a\ R\ c$. A \textit{proper order} (or \textit{strict order}) is an irreflexive and transitive relation. A relation $R$ on a set $A$ is \textit{well-founded}\index{well-founded relation} if every non-empty subset of $A$ has at least one minimal element w.r.t. $R$.\medskip\\
+A relation $R$ on a set $A$ is a \textit{simplification ordering} if:
+\begin{itemize}
+	\item it is \textit{stable under substitutions}\index{stable relation under substitutions}, i.e. $a\ R\ b$ implies $a\theta\ R\ b\theta$ for all $a, b\in A$ and substitutions $\theta$
+	\item it is \textit{monotonic}\index{monotonic relation}, i.e. $a\ R\ b$ implies $s[a]\ R\ s[b]$ for all $a,b,s\in A$
+	\item it has the \textit{subterm property}, i.e. $a\ \triangleleft\ b$ implies $a\ R\ b$
+\end{itemize}
+\section{The superposition calculus}
+A theorem prover is provided with a set of axioms corresponding to the theory under consideration and a conjecture to be proven. Most theorem provers use some kind of \textit{inference system} to automate the creation of new formulas or simplification of old ones. An \textit{inference} is a rule of the form:
+%\begin{prooftree}
+%	\AxiomC{$F_1$}
+%	\AxiomC{...}
+%	\AxiomC{$F_n$}
+%	\TrinaryInfC{$G$}
+%\end{prooftree}
+We say that $F_1,...,F_n$ are the \textit{premises} and $G$ is the \textit{conclusion} of the inference. Inferences with no premises are called \textit{axioms}. If we can apply an inference rule because the premises can be matched with axioms or formulas already derived, then we instantiate the inference rule with the concrete premises and derive the conclusion, adding it to the set of derived formulas. A set of inference rules give an inference system.\medskip\\
+An inference is a \textit{simplifying}\index{simplifying inference} one if one or more of the premises can be removed from the set of formulas because they are redundant given the conclusion. We denote such a simplification with a crossed line:
+%\begin{prooftree}
+%	\AxiomC{$\cancel{F_1}$}
+%	\AxiomC{...}
+%	\AxiomC{$F_n$}
+%	\TrinaryInfC{$G$}
+%\end{prooftree}
+An inference rule is \textit{sound} if its conclusion logically follows from its premises. An inference system is sound if all of its rule are. An inference system is \textit{complete} if any valid set of formulas can be proven true in it.\medskip\\
+Most modern first-order theorem provers use the \textit{superposition calculus} (\Sup) as their inference system. It works on sets of clauses, so all input formulas must be converted to \textit{clausal normal form} (or CNF) before they can be used with the calculus. For our purposes, we will treat conversion to CNF as a black box and refer the reader to \cite{vcnf}. We write $\mathtt{cnf}(F)$ to denote the conversion of a formula $F$ to its conjunctive normal form. \Sup is sound and \textit{refutationally complete}. A \textit{refutation} is a derivation of $\bot$. Refutational completeness means for any unsatisfiable formula set, we can derive the empty clause. Therefore, with superposition we usually negate our input conjecture and try to refute it which, if successful, means the original conjecture is valid.\medskip\\
+For the completeness proof of \Sup, an ordering of terms, literals and clauses is necessary. In particular, we are interested in simplification orderings due to the following result \cite{baader_nipkow_1998}:
+\begin{theorem}
+	Every simplification ordering is well-founded.
+\end{theorem}
+Widely-used simplification orders include \textit{KBO} (Knuth-Bendix ordering) \cite{kbo} and \textit{LPO} (lexicographic path ordering) \cite{lpo}. A discussion of these can be found in \cite{dershowitz1982}.\medskip\\
+A first-order theorem prover uses a simplification term ordering $\succ$ as the basis to order terms, which is then extended to equalities, literals and clauses \cite{superpositionproof}. An equality with sides $l$ and $r$ is oriented as $l=r$ if $l\succ r$. We then use the \textit{multiset extension} of the ordering to extend this from terms to literals and from literals to clauses. We will abuse notation and use the same symbol $\succ$ to denote the original ordering and its extensions.\medskip\\
+We now present some of the inference rules necessary for this thesis from \Sup:\medskip\\
+\textit{Superposition}\index{superposition} rules are
+%\begin{multicols}{2}
+%	\begin{prooftree}
+%		\AxiomC{$l=r\lor C$}
+%		\AxiomC{$t[s]=u\lor D$}
+%		\RightLabel{(\func{Sup})}
+%		\BinaryInfC{$(t[r]=u\lor C\lor D)\theta$}
+%	\end{prooftree}
+%	\begin{prooftree}
+%		\AxiomC{$l=r\lor C$}
+%		\AxiomC{$t[s]\neq u\lor D$}
+%		\RightLabel{(\func{Sup})}
+%		\BinaryInfC{$(t[r]\neq u\lor C\lor D)\theta$}
+%	\end{prooftree}
+%\end{multicols}
+%\begin{prooftree}
+%	\AxiomC{$l=r\lor C$}
+%	\AxiomC{$L[s]\lor D$}
+%	\RightLabel{(\func{Sup})}
+%	\BinaryInfC{$(L[r]\lor C\lor D)\theta$}
+%\end{prooftree}
+where $\theta$ is an mgu of $l$ and $s$, $s$ is not a variable, $r\theta\not\succeq l\theta$, $u\theta\not\succeq t[s]\theta$ and $L$ is not an equality literal.\medskip\\
+\textit{Binary resolution}\index{binary resolution} is
+%\begin{prooftree}
+%	\AxiomC{$A\lor C$}
+%	\AxiomC{$\neg B\lor D$}
+%	\RightLabel{(\func{Bin})}
+%	\BinaryInfC{$(C\lor D)\theta$}
+%\end{prooftree}
+where $\theta$ is the mgu of $A$ and $B$.\medskip\\
+\textit{Equality resolution}\index{equality resolution} is
+%\begin{prooftree}
+%	\AxiomC{$l\neq r\lor C$}
+%	\RightLabel{(\func{ER})}
+%	\UnaryInfC{$C\theta$}
+%\end{prooftree}
+where $\theta$ is the mgu of $l$ and $r$.\medskip\\
+Moreover, we add a special case of superposition as a simplification rule, called \textit{demodulation}, which is
+%\begin{prooftree}
+%	\AxiomC{$l=r$}
+%	\AxiomC{$\cancel{C[l\theta]\lor D}$}
+%	\RightLabel{(\func{Dem})}
+%	\BinaryInfC{$C[r\theta]\lor D$}
+%\end{prooftree}
+where $l\theta\succ r\theta$ and $C[l\theta]\lor D\succ l\theta=r\theta$.
+\section{Saturation-based proof search}
+Given a set of input formulas $C$ in clausal form, the set of all derivable clauses using inference rules from \Sup with the ordering $\succ$ from the set $C$ is called the \textit{closure of $F$ w.r.t. \Sup}\index{closure of formula set}. If the closure contains $\square$, the original set $C$ is unsatisfiable, otherwise it is satisfiable. The process of computing the closure is called \textit{saturation}. However, this process often results in using up an unlimited amount of time and memory, rendering it practically unusable. This is partly due to the undecidability of satisfiability for first-order theorems \cite{godel} which means sometimes an infinite amount of resources is needed to prove a theorem. For that matter, in practice more subtle notions are needed to tackle this problem.\medskip\\
+The first one is \textit{saturation up to redundancy}. A clause $C$ is \textit{redundant}\index{redundant clause} w.r.t a set of clauses $S$ if some subset of $S$ of clauses smaller than $C$ w.r.t $\succ$ logically imply $C$. A clause can become redundant during saturation the moment it is added to the set of clauses or later when new clauses make it redundant. Clauses that never become redundant in the set of clauses during saturation are called \textit{persistent}\index{persistent clause}. Saturation up to redundancy means the closure is entirely made up of persistent clauses, redundant ones are ideally eliminated the moment they become redundant (or never added in the first place). One way of removing such clauses is adding \textit{deletion rules}\index{deletion rule} to the inference system such as tautology elimination. Redundancy is in general undecidable, so we cannot eliminate all redundant clauses in practice. We use cheap simplification rules instead.\medskip\\
+Other methods of controlling the search space and the saturation process are selection methods which control the order in which the inferences are applied. For a more detailed discussion on saturation algorithms see \cite{cav13}.
