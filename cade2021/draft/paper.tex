@@ -82,12 +82,7 @@
 \begin{abstract}
 %\keywords{First keyword  \and Second keyword \and Another keyword.}
 
-Formally ensuring software reliability is challenging due to the growing complexity of software in terms of its size, used unbounded and inductive data types and supported workflow. As manual code analysis is not a viable solution, automated reasoning approaches are needed for proving software correct. There are several prominent methods addressing this challenge by (i) translating parts of a system to a logic-based formalism and (ii) using automated theorem proving to validate certain safety and liveness program properties.
-
-In this context a vital ingredient in automated reasoning is inductive reasoning, which can/must be used whenever repetition is present in a software component, e.g. loops or recursive data structures in computer programs or feedback loops in electric circuits. The two main branches in the literature
-are explicit and implicit induction. In this thesis focus on the former approach which is based broadly on the Noetherian well-founded induction principle. There is a plethora of research already done in this area with several automated theorem provers as well as proof assistants are equipped with inductive reasoning techniques. Some of the earliest ones are \textsc{Nqthm/ACL2}, \textsc{Inka} and \textsc{Oyster/CLAM}. Recently, modern automated theorem provers, such as \textsc{ZipperPosition}, \textsc{CVC4} and \textsc{Vampire}, started to incorporate inductive types and reasoning.
-
-The aim of the proposed thesis is to advance the state-of-the art in inductive reasoning within first-order theorem proving, by using automating reasoning with recursive function definitions over inductive data types.
+Program verification and analysis are two important areas where first-order quantified formulas and theories are used. Saturation-based theorem proving in this context provides an effective toolset for full automation but still lacks some of the more advanced techniques applied in state-of-the-art proof-assistants to tackle difficult inductive problems. We look at a slice of this domain characterized by datatypes and recursive function definitions and focus on (1) stronger induction formula generation based on function definitions and (2) inference rules suited for inductive problems that help during saturation. We implement these in the state-of-the-art superposition prover Vampire.
 \end{abstract}
 
 \section{Introduction}
@@ -98,6 +93,7 @@ The aim of the proposed thesis is to advance the state-of-the art in inductive r
 \input{motivating_example.tex}
 
 \section{Preliminaries}
+\label{sec:preliminaries}
 \input{preliminaries.tex}
 
 \section{Function definitions and Structural Induction}
@@ -109,6 +105,8 @@ The aim of the proposed thesis is to advance the state-of-the art in inductive r
 \input{function_def_rewriting.tex}
 
 \section{Induction in Saturation-based proof search}
+\label{sec:saturation}
+\input{saturation.tex}
 
 \section{Experiments}
 \label{sec:experiments}
@@ -132,7 +130,7 @@ The aim of the proposed thesis is to advance the state-of-the art in inductive r
 %
 
 \bibliographystyle{splncs04}
-\bibliography{bib}
+\bibliography{paper-bib}
  
 \end{document}
 

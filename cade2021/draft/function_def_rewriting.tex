@@ -1,23 +1,23 @@
 % !TeX root = ./paper.tex
 
-As discussed in Section \ref{sec:motivating}, any function definition $f(\overline{x})\fneq t$ may be oriented in a different way in a superposition theorem prover due to $t\succ f(\overline{x})$ given by the ordering. The choices we have here is either not being able to simplify induction formulas or losing completeness.
+As discussed in Section \ref{sec:motivating}, any function definition $f(\overline{x}):= t$ may be oriented in a different way in a superposition theorem prover due to $t\succ f(\overline{x})$ given by the ordering. The choices we have here is either not being able to simplify induction formulas or losing completeness.
 
-One solution is to choose an ordering that orients all function definitions according to their intended usage. Although this task is in general undecidable \cite{terminating}, such an ordering can be found e.g. for KBO in polynomial time if it exists \cite{kbodecidability,kbopolynomial}. However, even if the initial orientation exists, there may be new function definitions derived from the initial ones that need to be oriented on the fly which is not practically achievable. Otherwise, conflicting orientations of two variants for the same function definition can cause an infinite chain of rewriting.
+One solution is to choose an ordering that orients all function definitions according to their intended usage \cite{terminating,kbodecidability,kbopolynomial}. However, even if the initial orientation exists, there may be new function definitions derived from the initial ones that need to be oriented on the fly which is not practically achievable. Otherwise, conflicting orientations of two variants for the same function definition can cause an infinite chain of rewriting.
 
 Another solution is to allow rewriting according to the intended function definition orientation and at the same time disallow any inferences that would rewrite the function definitions themselves, creating new variants. Despite losing completeness in this case, depending on factors like whether we use constructor- or destructor-style function definitions, it can actually help discard inferences which we would not be used anyways, e.g. any instantiated variant for a function definition just creates redundancy in the search space.
 
 We use this latter solution and we disallow any inferences with such function definition clauses except for rewriting with two special inference rules: one is a modified \textit{paramodulation}, the other is a special case of \textit{demodulation}. We let the special demodulation happen only if the function definition is a unit clause and it has an orientation which is simplifying w.r.t. the ordering $\succ$:
 \begin{equation}
 	\infer[\small{(\texttt{DemF})}]{L[t\theta]\lor D}
-	{f(\overline{x})=t & \cancel{L[f(\overline{x})\theta]\lor D}}
+	{f(\overline{x}):=t & \cancel{L[f(\overline{x})\theta]\lor D}}
 \end{equation}
-where $f(\overline{x})=t$ is a function definition, moreover $f(\overline{x})\theta\succ t\theta$ and $L[f(\overline{x})\theta]\lor D\succ f(\overline{x})\theta=t\theta$. Since for functions containing no mutually recursive functions, the function "dependency tree" is a DAG, it is expected that this rule can be used at least for the base cases of any function definition since those definitions can be oriented in the right way by simply creating a precedence from the DAG.
+where $f(\overline{x})\theta\succ t\theta$ and $L[f(\overline{x})\theta]\lor D\succ f(\overline{x})\theta=t\theta$. Since for functions containing no mutually recursive functions, the function "dependency tree" is a DAG, it is expected that this rule can be used at least for the base cases of any function definition since those definitions can be oriented in the right way by simply creating a precedence from the DAG.
 
 Second, all other non-simplifying rewriting with function definitions is done with the modified paramodulation rule:
 \begin{equation}
-\infer[\small{(\texttt{ParF})}]{L[t\theta]\lor C\theta\lor D}{f(\overline{x})=t\lor C & L[f(\overline{x})\theta]\lor D}
+\infer[\small{(\texttt{ParF})}]{L[t\theta]\lor C\theta\lor D}{f(\overline{x}):=t\lor C & L[f(\overline{x})\theta]\lor D}
 \end{equation}
-where $f(\overline{x})=t$ is a function definition. This rule has no additional side conditions so that we can rewrite any part of a clause. This will help expand function headers when needed but at the same time we lose properties such as fairness or completeness.
+This rule has no side conditions so that we can rewrite any part of a clause which helps expand function headers when needed but at the same time we lose properties such as fairness and completeness.
 
 Note that we only use clauses for such rewriting that contain exactly one equality literal marked as a function definition. One might define e.g. non-determinism with clauses containing more than one equality:
 $$\mathtt{f}(\overline{x})=t_1\lor \mathtt{f}(\overline{x})=t_2$$

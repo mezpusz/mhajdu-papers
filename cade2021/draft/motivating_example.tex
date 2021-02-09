@@ -1,22 +1,13 @@
 % !TeX root = ./paper.tex
 
 \begin{figure}
-\begin{mdframed}
-	$$\begin{aligned}&\nat:=0 \mid \suc(\pre(\nat))\\
-	&\lst:=\nil\mid\cons(\head(\nat),\tail(\lst))\\
-	&\btree:=\bnil \mid \bnode(\bleft(\btree),\bval(\nat),\bright(\btree))\end{aligned}$$
-\end{mdframed}
-\caption{Inductive datatypes used}
-\label{fig:datatypes}
-\end{figure}
-\begin{figure}
 \begin{minipage}[t]{0.4\textwidth}
 	$$\begin{aligned}&\forall y.0+y:=y\\
 	&\forall x,y.\suc(x)+y:=\suc(x+y)\\
 	\end{aligned}$$
 	\hrule
 	$$\begin{aligned}&\even(0):=\top\\
-	&\even(\suc(0)):=\bot\\
+	&\even.2:\even(\suc(0)):=\bot\\
 	&\forall z.\even(\suc(\suc(z))):=\even(z)\\
 	\end{aligned}$$
 	\hrule
@@ -46,23 +37,33 @@
 
 Finding an induction formula that leads to a successful proof for an inductive problem is known to be undecidable. Some provers like ACL2 or IsaPlanner take into account the structure of any function present in an inductive goal when creating induction formulas and provide heuristics to select the most suitable one as the next proof step. Such heuristics are however still relatively uncommon in saturation-based theorem provers.
 \begin{example}\label{ex:1}
-$$\forall x,y. (\mathtt{even}(x)\land \mathtt{even}(y))\rightarrow \mathtt{even}(x+y)$$
-The function definitions for $\mathtt{even}$ and + can be found in Figure \ref{fig:functions}. Negating and clausifying this conjecture yields:
-$$\begin{Bmatrix}
-\{\even(\sigma_0)\},\{\even(\sigma_1)\},\{\neg\even(\sigma_0+\sigma_1)\}
-\end{Bmatrix}$$
-One could select the clause $\{\neg\even(\sigma_0+\sigma_1)\}$ for induction and use the simplest induction formula with either $\sigma_0$ or $\sigma_1$ as the induction term. E.g. in the former case, we get:
-$$\begin{pmatrix}\even(0+\sigma_1)\land\\
-\forall z.(\even(z+\sigma_1)\rightarrow\even(\suc(z)+\sigma_1))\end{pmatrix}\rightarrow \forall x.\even(x+\sigma_1)$$
-After clausification and binary resolution with given clause, we get:
-$$\begin{Bmatrix}
-\{\neg\even(0+\sigma_1)\lor \even(\sigma_2+\sigma_1)\},\\
-\{\neg\even(0+\sigma_1)\lor \neg\even(\suc(\sigma_2)+\sigma_1)\}
-\end{Bmatrix}$$
-The base case can be solved by applying the base case of + and binary resolving with $\{\even(\sigma_1)\}$ but the literal $\neg\even(\suc(\sigma_2)+\sigma_1)$ can be only simplified once to get $\neg\even(\suc(\sigma_2+\sigma_1))$ because there is no matching case in the definition of $\even$. Inducting once again could solve the problem but in this context, each induction inference gives new Skolem constants, so after the second induction we are left with two induction hypotheses, none of which matches the current induction step conclusion literal:
-$$\begin{Bmatrix}
-\{\even(\sigma_2+\sigma_1)\},\{\even(\suc(\sigma_3+\sigma_1))\},\{\neg\even(\sigma_3+\sigma_1)\}
-\end{Bmatrix}$$
+$$\forall x,y. (\even(x)\land \even(y))\rightarrow \even(x+y)$$
+The function definitions for $\even$ and + can be found in Figure \ref{fig:functions}. We can do the straightforward derivation shown in Figure \ref{fig:1}.
+\footnotesize
+\begin{figure}\begin{mdframed}[usetwoside=false,innermargin=0pt]$$\begin{aligned}
+&\even(\sigma_0)&&\text{1. input}\\
+&\even(\sigma_1)&&\text{2. input}\\
+&\neg\even(\sigma_0+\sigma_1)&&\text{3. input}\\
+\hline
+&\begin{pmatrix}\even(0+\sigma_1)\land\\\forall z.(\even(z+\sigma_1)\rightarrow\even(\suc(z)+\sigma_1))\end{pmatrix}\rightarrow \forall x.\even(x+\sigma_1)&&\text{4. induction formula}\\
+&\neg\even(0+\sigma_1)\lor \even(\sigma_2+\sigma_1)&&\text{5. bin.res. 3, cnf(4)}\\
+&\neg\even(0+\sigma_1)\lor \neg\even(\suc(\sigma_2)+\sigma_1)&&\text{6. bin.res. 3, cnf(4)}\\
+&\neg\even(\sigma_1)\lor \even(\sigma_2+\sigma_1)&&\text{7. 5, + axiom}\\
+&\neg\even(\sigma_1)\lor \neg\even(\suc(\sigma_2)+\sigma_1)&&\text{8. 6, + axiom}\\
+&\even(\sigma_2+\sigma_1)&&\text{9. bin.res. 2, 7}\\
+&\neg\even(\suc(\sigma_2)+\sigma_1)&&\text{10. bin.res. 2, 8}\\
+&\neg\even(\suc(\sigma_2+\sigma_1))&&\text{11. 10, + axiom}\\
+\hline
+&...\\
+&\even(\suc(\sigma_3+\sigma_1))&&\text{12.}\\
+&\neg\even(\sigma_3+\sigma_1)&&\text{13.}
+\end{aligned}$$\end{mdframed}
+\caption{Derivation for Example \ref{ex:1}}
+\label{fig:1}
+\end{figure}
+\normalsize
+After selecting (3) for induction and binary resolving it with the clausal form of the simplest induction formula (4) with $\sigma_0$ as induction term, we get (5) and (6). This can be simplified to get (9) and (11) but here we are stuck because there is no matching case in the definition of $\even$. Inducting once again -- this time on $\sigma_2$ -- could solve the problem but after doing similar simplifications we get (12) and (13). Neither of the hypotheses (9) and (12) match the conclusions (11) and (13), either due to the different Skolem constants or the different term structure.
+
 Using $\sigma_1$ as induction term does not help either -- we cannot get rid of any constructor terms in the second argument position of +.
 \end{example}
 In this paper, we introduce some basic preprocessing of function definitions to get "matching" induction formulas and then -- if different induction formulas are generated for a goal -- combine these in a way that all function terms can be simplified in the case distinction.
@@ -71,6 +72,7 @@ In a saturation-based theorem prover, even the "correct" induction formula is us
 \begin{example}
 	Given a unit-clause:
 	$$\{\fltn(\sigma_0)\append\sigma_1\neq\fltn_2(\sigma_0,\sigma_1)\}$$
-	Proving the literal in this clause inductively leads to a simple case distinction in the induction formula with a base case $\bnil$ and a step case $\bnode(u,v,w)$ with induction hypotheses $u$ and $v$. However, due to the large terms on the right-hand side of function definitions $\fltn$ and $\fltn_2$ for case $\bnode(u,v,w)$, the induction step conclusion cannot be simplified:
+	Proving this literal inductively with the simplest case distinction gives a step case $\bnode(u,v,w)$ with induction hypotheses $u$ and $v$. Due to the large terms on the right-hand side of function definitions $\fltn$ and $\fltn_2$ for case $\bnode(u,v,w)$, the induction step conclusion cannot be simplified:
 	$$\fltn(\bnode(\sigma_2,\sigma_3,\sigma_4))\append\sigma_1\neq\fltn_2(\bnode(\sigma_2,\sigma_3,\sigma_4),\sigma_1)$$
 \end{example}
+So even though the right induction formula was found we could not solve one of its cases because of limitations in the calculus. We address this issue in a way that still preserves relative completeness and some of the properties of simplifications.
