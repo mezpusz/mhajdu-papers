@@ -1,0 +1,11 @@
+% !TeX root = ./paper.tex
+
+Let us turn our attention to how induction is applied in saturation. We already introduced an induction rule in Section \ref{sec:preliminaries} which only works with a single premise. Now we introduce a new inference rule which gives more freedom in applying induction -- with the cost of increasing the search space. To see the motivation for this rule, let us go back to Example \ref{ex:1}.
+
+After creating formula \eqref{eq:even} to fit both functions, we face yet another issue -- we cannot refute the second case $\suc(0)$, in particular, this clause:
+$$\neg\even(\suc(\sigma_1))$$
+This is not because the induction formula is invalid but because the original literal $\even(\sigma_0+\sigma_1)$ is not refutable by itself. In terms of the original formula, this case is true because the antecedent is false:
+$$\forall y. (\even(\suc(0))\land\even(y))\rightarrow\even(\suc(0)+y)$$
+In the saturation, there is no literal corresponding to $\even(\suc(0))$ which would make it refutable. Our proposal is the following: when assumptions in different clauses are missing to prove a literal by induction, we induct on all clauses at once. This can be done by creating the same induction formula but this time in place of the single literal, we use $\even(\sigma_0)\rightarrow\even(\sigma_0+\sigma_1)$ (denoted by $L[\sigma_0]$):
+$$L[0]\land(L[0]\rightarrow L[\suc(0)])\land\forall x.(L[x]\land L[\suc(x)]\rightarrow L[\suc(\suc(x))])\rightarrow \forall u.L[u]$$
+The clauses resulting from this induction formula are binary resolved with both $\even(\sigma_0)$ and $\neg\even(\sigma_0+\sigma_1)$, eventually leading to the empty clause (proof omitted).
