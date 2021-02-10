@@ -86,6 +86,8 @@ One of the advantages of taking the union is that by definition it is guaranteed
 $$\forall x,y.x+y=y+x$$
 can be solved by first inducting on $x$ and then on $y$ or vice versa -- the order is irrelevant. However, in general, depending on the order of simplifications and the axioms used for each function, inducting sequentially on multiple terms can lead to different results.
 
+\todo{Give some heuristics on when to use the union.}
+
 \subsection{Well-foundedness and well-definedness}
 So far we assumed that every function we are provided with is well-founded and well-defined. Functions that fail to meet this requirement are potential sources of unsoundness. We chose easy-to-check sufficient conditions for both. We base our well-foundedness check on a lexicographic order on the active argument positions of each function and use the subterm relation as elementary property. This can be easily checked with e.g. constructor-style input functions where arguments of inductive sorts on the left-hand side of a function definition are either variables or term algebra constructors. A common example for this is the Ackermann function given by:
 $$\begin{aligned}\forall y. \ack(0,y)&:=\suc(y)\\

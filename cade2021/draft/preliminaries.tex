@@ -15,7 +15,7 @@ $$\begin{aligned}\nat&:=0 &&\mid \suc(\pre(\nat))\\
 
 An \textit{interpreted symbol} is a function or predicate whose meaning is defined through axioms, e.g. $=$ is an interpreted symbol in first-order logic with equality. All other symbols are called \textit{uninterpreted}. We distinguish \textit{function/predicate definitions} from regular axioms. These define a branch of computation for a function/predicate. Such axiom is denoted by marking exactly one equality literal in it with $:=$ such as $F\rightarrow l:=r$ which means that the orientation of this equality is fixed as left-to-right, $l$ is a function header and $r$ is a function definition, $F$ is the guard condition for this branch. We abuse this notation for predicate definitions where $:=$ can be replaced with a $\leftrightarrow$.
 
-A notation we use is $E[s]$ meaning there is one (or more) distinguished occurrence(s) of the term $s$ in $E$. $E[t]$ then means that these occurrences are changed to a term $t$. 
+A notation we use is $E[s]$ meaning there is zero \todo{is this okay with zero? used in IndM rule} (or more) distinguished occurrence(s) of the term $s$ in $E$. $E[t]$ then means that these occurrences are changed to a term $t$. We may abbreviate $E[t_1]...[t_n]$ with $E[\overline{t}]$.
 
 A relation $R$ on a set $A$ is a \textit{simplification ordering} if:
 \begin{itemize}
@@ -29,3 +29,10 @@ Given a set of input formulas $C$ in clausal form, the set of all derivable clau
 We use the \textit{superposition calculus} as the inference system in this paper. It works on sets of clauses -- we treat the conversion to \textit{clausal normal form} (or CNF) as a black box \cite{vcnf} and denote the conversion of a formula $F$ to its conjunctive normal form with $\mathtt{cnf}(F)$. The superposition calculus is \textit{sound} and \textit{refutationally complete}. A \textit{refutation} is a derivation of $\bot$. Refutational completeness means for any unsatisfiable formula set, we can derive the empty clause. Therefore, with superposition we usually negate our input conjecture and try to refute it which, if successful, means the original conjecture is valid.
 
 For the completeness a simplification term ordering $\succ$ of terms is needed (e.g. KBO, LPO) which is extended to literals and clauses with the multiset-extension. We will abuse notation and use the same symbol $\succ$ to denote the original ordering and its extensions.
+
+We introduce an inference rule for induction adapted from \cite{vampireinduction}:
+\begin{equation*}\label{eq:ind:rule}
+\infer[\small{\tt (Ind)}]{\mathtt{cnf}(F \rightarrow \forall y.(L[y]))}{\lnot L[t] \lor C}
+\end{equation*}
+where $L$ is a ground literal, $C$ is a clause and $F \rightarrow \forall y.(L[y])$ is some valid induction formula. The conclusion of the rule can be then resolved against its
+premise, yielding the clauses $\mathtt{cnf}(\lnot F) \lor C$.
