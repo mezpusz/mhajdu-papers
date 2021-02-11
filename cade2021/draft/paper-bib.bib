@@ -101,7 +101,6 @@ address = {USA}
   pages     = {172--188},
   publisher = {Springer},
   year      = {2017},
-  url       = {https://doi.org/10.1007/978-3-319-66167-4\_10},
   doi       = {10.1007/978-3-319-66167-4\_10},
   timestamp = {Sat, 19 Oct 2019 20:06:07 +0200},
   biburl    = {https://dblp.org/rec/conf/frocos/Cruanes17.bib},
@@ -128,7 +127,6 @@ title = {{Automation of Mathematical Induction as part of the History of Logic}}
   pages     = {477--494},
   publisher = {Springer},
   year      = {2019},
-  url       = {https://doi.org/10.1007/978-3-030-29436-6\_28},
   doi       = {10.1007/978-3-030-29436-6\_28},
   timestamp = {Fri, 27 Dec 2019 21:27:18 +0100},
   biburl    = {https://dblp.org/rec/conf/cade/RegerV19.bib},
@@ -610,5 +608,21 @@ year = {1928},
 @MISC{middeldorplecturenotes,
 	author = {Middeldorp, Aart},
 	title = {{Term Rewriting Lecture Notes}}
+}
+
+@InProceedings{smtinduction,
+	author="Reynolds, Andrew
+	and Kuncak, Viktor",
+	editor="D'Souza, Deepak
+	and Lal, Akash
+	and Larsen, Kim Guldstrand",
+	title="{Induction for SMT Solvers}",
+	booktitle="Verification, Model Checking, and Abstract Interpretation",
+	year="2015",
+	publisher="Springer Berlin Heidelberg",
+	address="Berlin, Heidelberg",
+	pages="80--98",
+	abstract="Satisfiability modulo theory solvers are increasingly being used to solve quantified formulas over structures such as integers and term algebras. Quantifier instantiation combined with ground decision procedure alone is insufficient to prove many formulas of interest in such cases. We present a set of techniques that introduce inductive reasoning into SMT solving algorithms that is sound with respect to the interpretation of structures in SMT-LIB standard. The techniques include inductive strengthening of conjecture to be proven, as well as facility to automatically discover subgoals during an inductive proof, where subgoals themselves can be proven using induction. The techniques have been implemented in CVC4. Our experiments show that the developed techniques have good performance and coverage of a range of inductive reasoning problems. Our experiments also show the impact of different representations of natural numbers and quantifier instantiation techniques on the performance of inductive reasoning. Our solution is freely available in the CVC4 development repository. In addition its overall effectiveness, it has an advantage of accepting SMT-LIB input and being integrated with other SMT solving techniques of CVC4.",
+	isbn="978-3-662-46081-8"
 }
 

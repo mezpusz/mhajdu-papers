@@ -2,7 +2,7 @@
 
 Interpreted functions are often axiomatized in a definitional form, meaning that given these axioms for a well-founded function $f$, any occurrence of $f$ in a ground function term can be completely eliminated. In this paper, we consider well-founded (terminating) functions that are \textit{not mutually-recursive}. Although handling \textit{recursive} functions needs a bit of precaution because expanding any non-ground recursive function term into its definition may lead to a rewrite loop, we treat non-recursive functions the same since they can be thought of as functions that contain only base cases.
 \subsection{Generating induction formulas from function definitions}\label{sec:generating}
-In this section, we look at well-defined and well-founded function definitions and use them to obtain induction formulas. A function definition is a set of axioms of the form
+A function definition is a set of axioms of the form
 $$F\rightarrow f(s_1,...,s_n):=t$$
 as presented in Section \ref{sec:preliminaries}. For now, we treat the detection of such function definitions as a black box and address this issue later. An argument position $1\le i\le n$ of $f$ is an \textit{active argument position} if there is an axiom like above of $f$ s.t. for some $f(t_1,...,t_n)\trianglelefteq t$ and $s_i\neq t_i$. Given a literal $L$, we mark its \textit{active subterms} inductively as follows:
 \begin{itemize}
@@ -41,7 +41,7 @@ Even though there may be multiple induction formulas used for the proof of an in
 \forall z.(\even(z+\sigma_1)\rightarrow\even(\suc(\suc(z))+\sigma_1))\end{pmatrix}\rightarrow \forall u.\even(u+\sigma_1)\end{equation}
 The other is given by $\sigma_0+\sigma_1$:
 \begin{equation}\label{eq:even2}\begin{pmatrix}\even(0+\sigma_1)\land\forall x.(\even(x+\sigma_1)\rightarrow\even(\suc(x)+\sigma_1))\end{pmatrix}\rightarrow \forall z.\even(z+\sigma_1)\end{equation}
-Practically, trying the second formula is a waste of resources as we have already seen in Section \ref{sec:motivating} so we better off discarding it. There are very simple approaches in the literature on which one can base this decision. E.g. ACL2 would discard it because the step case of the first formula is in the \textit{transitive closure} of that of the second. In terms of well-founded relations, the second induction formula is based on the relation $x\prec\suc(x)$ and applying this twice gives us $x\prec\cdot\prec\suc(\suc(x))$, that is, the relation for the first formula.
+Practically, trying \eqref{eq:even2} is a waste of resources as we have already seen in Section \ref{sec:motivating} so we better off discarding it. There are very simple approaches in the literature on which one can base this decision. E.g. \textsc{ACL2} would discard it because the step case of \eqref{eq:even1} is in the \textit{transitive closure} of that of \eqref{eq:even2}. In terms of well-founded relations, \eqref{eq:even2} is based on the relation $x\prec\suc(x)$ and applying this twice gives us $x\prec\cdot\prec\suc(\suc(x))$, that is, the relation for \eqref{eq:even1}.
 
 The reason this works is only incidental -- although the case distinction of $+$ is more general than that of $\even$ and therefore every term in the case distinction of $\even$ will match a function definition of +, the induction hypothesis of the two are completely unrelated and therefore discarding one of them is like flipping a coin before the proof without knowing which one will be needed.
 
@@ -49,9 +49,10 @@ In order not to lose useful structure from the generated induction formulas, our
 
 For two induction formulas $F_1$ and $F_2$ with identical case distinctions, $F_1$ \textit{contains} $F_2$ if for each case, the set of induction hypotheses of the case in $F_1$ is a superset of that of $F_2$. If an induction formula is contained by another, we can safely discard it since its case distinction and induction hypotheses can be found in the second.
 \begin{example}
+	\todo{add example}
 \end{example}
 
-If two induction formulas do not contain each other, we can either use them separately or use their \textit{union} instead. The union of two induction formulas provides a case distinction with all cases from the original ones while supplying the necessary induction hypotheses. We can compute the union with the following two approaches:
+If two induction formulas do not contain each other, we can either use them separately or use their \textit{union} instead \cite{combining}. The union of two induction formulas provides a case distinction with all cases from the original ones while supplying the necessary induction hypotheses. We can compute the union with the following two approaches:
 \begin{enumerate}
 	\item We can think of the two in terms of well-founded orders and for each pair of subrelations from the first and the second, we compute their intersections. Then, we check whether any subrelation has cases left "outside" the intersections. Finally, we convert this union of orders back to a formula by adding the remaining cases, i.e. the base cases.
 	\item Otherwise, we can simply intersect every case of the two induction formulas putting together their induction hypotheses.
@@ -89,11 +90,15 @@ can be solved by first inducting on $x$ and then on $y$ or vice versa -- the ord
 \todo{Give some heuristics on when to use the union.}
 
 \subsection{Well-foundedness and well-definedness}
-So far we assumed that every function we are provided with is well-founded and well-defined. Functions that fail to meet this requirement are potential sources of unsoundness. We chose easy-to-check sufficient conditions for both. We base our well-foundedness check on a lexicographic order on the active argument positions of each function and use the subterm relation as elementary property. This can be easily checked with e.g. constructor-style input functions where arguments of inductive sorts on the left-hand side of a function definition are either variables or term algebra constructors. A common example for this is the Ackermann function given by:
+So far we assumed that every function we are provided with is well-founded and well-defined. Functions that fail to meet this requirement are potential sources of unsoundness. Well-foundedness must be also checked when creating the union of two induction formulas.
+
+We chose easy-to-check sufficient conditions for both. We base our well-foundedness check on a lexicographic order on the active argument positions of each function and use the subterm relation as elementary property. This can be easily checked with e.g. constructor-style input functions where arguments of inductive sorts on the left-hand side of a function definition are either variables or term algebra constructors. A common example for this is the Ackermann function given by:
 $$\begin{aligned}\forall y. \ack(0,y)&:=\suc(y)\\
 \forall x.\ack(\suc(x),0)&:=\ack(x,\suc(0))\\
 \forall x,y.\ack(\suc(x),\suc(y))&:=\ack(x,\ack(\suc(x),y))\end{aligned}$$
 Any function term stemming from a function that is not well-founded is ignored while generating induction formulas.
+
+After generating the union of two induction formulas, we check whether each case - recursive call pair obeys a lexicographic order and discard the union if not.
 
 For well-definedness, we distinguish \textit{under-definedness} and \textit{over-definedness}. The former can lead to missing false cases, thus introducing unsoundness but it can be easily mitigated by adding those missing cases. The latter is a bit more complicated: an induction formula with overlapping cases is not necessarily unsound but it can lead to ill-constructed case distinctions for the union. \todo{anything to add here?}
 
@@ -112,6 +117,7 @@ As discussed previously, a suitable lexicographic order establishes the well-fou
 \end{example}
 
 \subsection{Generalizing over occurrences and complex terms}
+\todo{maybe shorten this to referencing the generalization paper and add that we always include all active term occurrences}
 A useful general proof technique is \textit{generalizing formulas}, i.e. proving a more general statement. This is usually done to obtain shorter proofs or get rid of some complexity which prevents us from getting a proof in the first place.
 \begin{example}
 	The following statement cannot be solved by simply inducting on $x$:

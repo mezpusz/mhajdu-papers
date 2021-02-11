@@ -1,51 +1,62 @@
 % !TeX root = ./paper.tex
 
 \begin{figure}
-\begin{minipage}[t]{0.4\textwidth}
-	$$\begin{aligned}&\forall y.0+y:=y\\
-	&\forall x,y.\suc(x)+y:=\suc(x+y)\\
-	\end{aligned}$$
-	\hrule
-	$$\begin{aligned}&\even(0):=\top\\
-	&\even.2:\even(\suc(0)):=\bot\\
-	&\forall z.\even(\suc(\suc(z))):=\even(z)\\
-	\end{aligned}$$
-	\hrule
-	$$\begin{aligned}&\forall x.0\leq x:=\top\\
-	&\forall x.\suc(x)\leq 0:=\bot\\
-	&\forall x,y.\suc(x)\leq \suc(y):=x\leq y\\
-	\end{aligned}$$
-\end{minipage}
-\begin{minipage}[t]{0.5\textwidth}
-	$$\begin{aligned}&\forall x.\nil\append x:=x\\
-	&\forall x,y,z.\cons(x,y)\append z:=\cons(x,y\append z)\\
-	\end{aligned}$$
-	\hrule
-	$$\begin{aligned}
-	&\fltn(\bnil):=\nil\\
-	&\forall u,v,w.\fltn(\bnode(u,v,w)):=\\&\quad\fltn(u)\append\cons(v,\fltn(w))
-	\end{aligned}$$
-	\hrule
-	$$\begin{aligned}
-	&\forall x.\fltn_2(\bnil,x):=x\\
-	&\forall u,v,w,y.\fltn_2(\bnode(u,v,w),y):=\\&\quad\fltn_2(u,\cons(v,\fltn_2(w,y)))
-	\end{aligned}$$
-\end{minipage}
+\footnotesize
+%\begin{minipage}[t]{0.4\textwidth}
+%$$\begin{aligned}&\forall y.0+y:=y\\
+%&\forall x,y.\suc(x)+y:=\suc(x+y)\\
+%\end{aligned}$$
+%\hrule
+%$$\begin{aligned}&\even(0):=\top\\
+%&\even.2:\even(\suc(0)):=\bot\\
+%&\forall z.\even(\suc(\suc(z))):=\even(z)\\
+%\end{aligned}$$
+%\hrule
+%$$\begin{aligned}&\forall x.0\leq x:=\top\\
+%&\forall x.\suc(x)\leq 0:=\bot\\
+%&\forall x,y.\suc(x)\leq \suc(y):=x\leq y\\
+%\end{aligned}$$\end{minipage}
+%\begin{minipage}[t]{0.5\textwidth}
+%$$\begin{aligned}&\forall x.\nil\append x:=x\\
+%&\forall x,y,z.\cons(x,y)\append z:=\cons(x,y\append z)\\
+%\end{aligned}$$
+%\hrule
+%$$\begin{aligned}
+%&\fltn(\bnil):=\nil\\
+%&\forall u,v,w.\fltn(\bnode(u,v,w)):=\\&\quad\fltn(u)\append\cons(v,\fltn(w))
+%\end{aligned}$$
+%\hrule
+%$$\begin{aligned}
+%&\forall x.\fltn_2(\bnil,x):=x\\
+%&\forall u,v,w,y.\fltn_2(\bnode(u,v,w),y):=\\&\quad\fltn_2(u,\cons(v,\fltn_2(w,y)))$$
+%\end{minipage}
+$$\begin{aligned}&\forall y.0+y&&:=y&&\forall x.\nil\append x&&:=x\\
+&\forall x,y.\suc(x)+y&&:=\suc(x+y)&&\forall x,y,z.\cons(x,y)\append z&&:=\cons(x,y\append z)\\
+\cline{1-8}
+&\even(0)&&:=\top&&\fltn(\bnil)&&:=\nil\\
+&\even(\suc(0))&&:=\bot&&\forall u,v,w.\fltn(\bnode(u,v,w))&&:=\\
+&\forall z.\even(\suc(\suc(z)))&&:=\even(z)&&\phantom{aa}\fltn(u)\append\cons(v,\fltn(w))\\
+\cline{1-8}
+&\forall x.0\leq x&&:=\top&&\forall x.\fltn_2(\bnil,x)&&:=x\\
+&\forall x.\suc(x)\leq 0&&:=\bot&&\forall u,v,w,y.\fltn_2(\bnode(u,v,w),y)&&:=\\
+&\forall x,y.\suc(x)\leq \suc(y)&&:=x\leq y&&\phantom{aa}\fltn_2(u,\cons(v,\fltn_2(w,y)))\\
+\end{aligned}$$
 \caption{Recursive function definitions used}
 \label{fig:functions}
 \end{figure}
+\normalsize
 
-Finding an induction formula that leads to a successful proof for an inductive problem is known to be undecidable. Some provers like ACL2 or IsaPlanner take into account the structure of any function present in an inductive goal when creating induction formulas and provide heuristics to select the most suitable one as the next proof step. Such heuristics are however still relatively uncommon in saturation-based theorem provers.
+Finding an induction formula that leads to a successful proof for an inductive problem is known to be undecidable. Some provers like \textsc{ACL2} or \textsc{IsaPlanner} take into account the structure of any function present in an inductive goal when creating induction formulas and provide heuristics to select the most suitable one as the next proof step. Such heuristics are however still relatively uncommon in saturation-based theorem provers.
 \begin{example}\label{ex:1}
 $$\forall x,y. (\even(x)\land \even(y))\rightarrow \even(x+y)$$
-The function definitions for $\even$ and + can be found in Figure \ref{fig:functions}. We can do the straightforward derivation shown in Figure \ref{fig:1}.
+The function definitions for $\even$ and + can be found in Figure \ref{fig:functions}. We can do the straightforward derivation:
 \footnotesize
-\begin{figure}\begin{mdframed}[usetwoside=false,innermargin=0pt]$$\begin{aligned}
+\begin{mdframed}[usetwoside=false,innertopmargin=-5pt,skipabove=0pt,skipbelow=0pt]\begin{equation}\nonumber\begin{aligned}
 &\even(\sigma_0)&&\text{1. input}\\
 &\even(\sigma_1)&&\text{2. input}\\
 &\neg\even(\sigma_0+\sigma_1)&&\text{3. input}\\
 \hline
-&\begin{pmatrix}\even(0+\sigma_1)\land\\\forall z.(\even(z+\sigma_1)\rightarrow\even(\suc(z)+\sigma_1))\end{pmatrix}\rightarrow \forall x.\even(x+\sigma_1)&&\text{4. induction formula}\\
+&\begin{pmatrix}\even(0+\sigma_1)\land\\\forall z.(\even(z+\sigma_1)\rightarrow\even(\suc(z)+\sigma_1))\end{pmatrix}\rightarrow \forall x.\even(x+\sigma_1)&&\text{4. induction f.}\\
 &\neg\even(0+\sigma_1)\lor \even(\sigma_2+\sigma_1)&&\text{5. bin.res. 3, cnf(4)}\\
 &\neg\even(0+\sigma_1)\lor \neg\even(\suc(\sigma_2)+\sigma_1)&&\text{6. bin.res. 3, cnf(4)}\\
 &\neg\even(\sigma_1)\lor \even(\sigma_2+\sigma_1)&&\text{7. 5, + axiom}\\
@@ -57,18 +68,15 @@ The function definitions for $\even$ and + can be found in Figure \ref{fig:funct
 &...\\
 &\even(\suc(\sigma_3+\sigma_1))&&\text{12.}\\
 &\neg\even(\sigma_3+\sigma_1)&&\text{13.}
-\end{aligned}$$\end{mdframed}
-\caption{Derivation for Example \ref{ex:1}}
-\label{fig:1}
-\end{figure}
+\end{aligned}\end{equation}\end{mdframed}
 \normalsize
-After selecting (3) for induction and binary resolving it with the clausal form of the simplest induction formula (4) with $\sigma_0$ as induction term, we get (5) and (6). This can be simplified to get (9) and (11) but here we are stuck because there is no matching case in the definition of $\even$. Inducting once again -- this time on $\sigma_2$ -- could solve the problem but after doing similar simplifications we get (12) and (13). Neither of the hypotheses (9) and (12) match the conclusions (11) and (13), either due to the different Skolem constants or the different term structure.
+After selecting (3) for induction and binary resolving it with the clausal form of the simplest induction formula (4) with $\sigma_0$ as induction term, we get (5) and (6). Simplifications give (9) and (11) but there is no $\even$ axiom to further simplify. One more induction on $\sigma_2$ and similar simplifications yield (12) and (13). Neither of the hypotheses (9) and (12) match the conclusions (11) and (13), either due to the different Skolem constants or the different term structure.
 
 Using $\sigma_1$ as induction term does not help either -- we cannot get rid of any constructor terms in the second argument position of +.
 \end{example}
-In this paper, we introduce some basic preprocessing of function definitions to get "matching" induction formulas and then -- if different induction formulas are generated for a goal -- combine these in a way that all function terms can be simplified in the case distinction.
+In this paper, we create "matching" induction formulas using function definitions and then -- if different induction formulas are generated for a goal -- combine these in a way that all function terms can be simplified in the case distinction while keeping the necessary hypotheses.
 
-In a saturation-based theorem prover, even the "correct" induction formula is useless if the inference rules prohibit rewriting function terms in inductive step and base cases, either because a function term cannot be expanded into its definition or a necessary induction hypothesis cannot be used, ultimately leading to a stuck proof.
+In a saturation-based theorem prover, even the "correct" induction formula is useless if the term ordering prohibits rewriting function terms into their definitions or using necessary induction hypothesis, ultimately leading to a stuck proof.
 \begin{example}
 	Given a unit-clause:
 	$$\{\fltn(\sigma_0)\append\sigma_1\neq\fltn_2(\sigma_0,\sigma_1)\}$$

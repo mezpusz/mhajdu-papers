@@ -17,16 +17,10 @@ An \textit{interpreted symbol} is a function or predicate whose meaning is defin
 
 A notation we use is $E[s]$ meaning there is zero \todo{is this okay with zero? used in IndM rule} (or more) distinguished occurrence(s) of the term $s$ in $E$. $E[t]$ then means that these occurrences are changed to a term $t$. We may abbreviate $E[t_1]...[t_n]$ with $E[\overline{t}]$.
 
-A relation $R$ on a set $A$ is a \textit{simplification ordering} if:
-\begin{itemize}
-	\item it is \textit{stable under substitutions}\index{stable relation under substitutions}, i.e. $a\ R\ b$ implies $a\theta\ R\ b\theta$ for all $a, b\in A$ and substitutions $\theta$
-	\item it is \textit{monotonic}\index{monotonic relation}, i.e. $a\ R\ b$ implies $s[a]\ R\ s[b]$ for all $a,b,s\in A$
-	\item it has the \textit{subterm property}, i.e. $a\ \triangleleft\ b$ implies $a\ R\ b$
-\end{itemize}
 \subsection{Saturation-based proof search}
 Given a set of input formulas $C$ in clausal form, the set of all derivable clauses using an inference system from the set $C$ is called the \textit{closure of $F$} w.r.t. the system. If the closure contains $\square$, the original set $C$ is unsatisfiable, otherwise it is satisfiable. The process of computing the closure is called \textit{saturation}. In practice more subtle notions are needed to tackle this problem, the first one is \textit{saturation up to redundancy}. A clause $C$ is \textit{redundant} w.r.t a set of clauses $S$ if some subset of $S$ of clauses smaller than $C$ w.r.t $\succ$ logically imply $C$. An inference system is usually equipped with \textit{simplification and deletion rules} to get rid of redundant clauses. Second, selection methods are used which control the order in which the inferences are applied. For a more detailed discussion on saturation algorithms see \cite{cav13}.
 
-We use the \textit{superposition calculus} as the inference system in this paper. It works on sets of clauses -- we treat the conversion to \textit{clausal normal form} (or CNF) as a black box \cite{vcnf} and denote the conversion of a formula $F$ to its conjunctive normal form with $\mathtt{cnf}(F)$. The superposition calculus is \textit{sound} and \textit{refutationally complete}. A \textit{refutation} is a derivation of $\bot$. Refutational completeness means for any unsatisfiable formula set, we can derive the empty clause. Therefore, with superposition we usually negate our input conjecture and try to refute it which, if successful, means the original conjecture is valid.
+We use the \textit{superposition calculus} as the inference system in this paper. It works on sets of clauses -- we denote the conversion of a formula $F$ to its \textit{clausal normal form} with $\mathtt{cnf}(F)$. The superposition calculus is \textit{sound} and \textit{refutationally complete}. A \textit{refutation} is a derivation of $\bot$. Refutational completeness means for any unsatisfiable formula set, we can derive the empty clause. Therefore, with superposition we usually negate our input conjecture and try to refute it which, if successful, means the original conjecture is valid.
 
 For the completeness a simplification term ordering $\succ$ of terms is needed (e.g. KBO, LPO) which is extended to literals and clauses with the multiset-extension. We will abuse notation and use the same symbol $\succ$ to denote the original ordering and its extensions.
 
