@@ -1,0 +1,14 @@
+% !TeX root = ./paper.tex
+
+\subsection{Proving equational goals}
+In general, proving first-order theorems regarding inductive types requires not only using inference rules, but also coming up with the "right" induction formula when needed which is known to be undecidable.
+
+Moreover, as suggested by Example \ref{ex:1}, induction and the superposition calculus seem to be incompatible since we have to sometimes go against the ordering to get a proof. This apparent incompatibility does not contradict any completeness results and comes rather from the automation of induction -- if we know \textit{a priori} what induction formulas to use, putting them into the search space and letting any standard superposition prover do its work will give a proof.
+
+In this part, we focus on describing how function definitions and induction hypotheses of equational induction formulas are treated in a special way to get more proofs.
+
+\subsubsection{Function definitions}
+We assume that any function definition axiom is of the form:
+$$C\lor \mathtt{f}(\overline{x}) \rightsquigarrow t$$
+
+On a high-level, we follow the induction inferences of \cite{vampireinduction,vampiregeneralization}. We will extend this 

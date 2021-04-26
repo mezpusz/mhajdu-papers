@@ -1,0 +1,99 @@
+% !TeX root = ./paper.tex
+
+%\begin{figure}
+%\footnotesize
+%\begin{minipage}[t]{0.4\textwidth}
+%$$\begin{aligned}&\forall y.\add(0,y):=y\\
+%&\forall x,y.\add(\suc(x),y):=\suc(\add(x,y))\\
+%\end{aligned}$$
+%\hrule
+%$$\begin{aligned}&\even(0):=\top\\
+%&\even.2:\even(\suc(0)):=\bot\\
+%&\forall z.\even(\suc(\suc(z))):=\even(z)\\
+%\end{aligned}$$
+%\hrule
+%$$\begin{aligned}&\half(0):=0\\
+%&\half(\suc(0)):=0\\
+%&\forall x.\half(\suc(\suc(x)):=\suc(\half(x))\\
+%\end{aligned}$$\end{minipage}
+%\begin{minipage}[t]{0.5\textwidth}
+%$$\begin{aligned}&\size(\bnil):=0\\
+%&\forall x,y,z.\size(\bnode(x,y,z)):=\suc(\add(\size(x),\size(z)))\\
+%\end{aligned}$$
+%\hrule
+%$$\begin{aligned}
+%&\brotate(\bnil):=\nil\\
+%&\forall x,y,z,u,v.\brotate(\bnode(\bnode(x,y,z),u,v)):=\\&\quad\brotate(\bnode(x,y,\bnode(z,u,v)))
+%\end{aligned}$$
+%\end{minipage}
+%%$$\begin{aligned}&\forall y.\add(0,y)&&:=y&&\forall x.\nil\append x&&:=x\\
+%%&\forall x,y.\add(\suc(x),y)&&:=\suc(\add(x,y))&&\forall x,y,z.\cons(x,y)\append z&&:=\cons(x,y\append z)\\
+%%\cline{1-8}
+%%&\even(0)&&:=\top&&\fltn(\bnil)&&:=\nil\\
+%%&\even(\suc(0))&&:=\bot&&\forall u,v,w.\fltn(\bnode(u,v,w))&&:=\\
+%%&\forall z.\even(\suc(\suc(z)))&&:=\even(z)&&\phantom{aa}\fltn(u)\append\cons(v,\fltn(w))\\
+%%\cline{1-8}
+%%&\forall x.\fleq(0,x)&&:=\top&&\forall x.\fltn_2(\bnil,x)&&:=x\\
+%%&\forall x.\fleq(\suc(x),0)&&:=\bot&&\forall u,v,w,y.\fltn_2(\bnode(u,v,w),y)&&:=\\
+%%&\forall x,y.\fleq(\suc(x), \suc(y))&&:=\fleq(x, y)&&\phantom{aa}\fltn_2(u,\cons(v,\fltn_2(w,y)))\\
+%%\end{aligned}$$
+%\caption{Recursive function definitions used}
+%\label{fig:functions}
+%\end{figure}
+%\normalsize
+
+\begin{example}\label{ex:1}
+$$\forall x. \rev(\rev(x))=x$$
+A manual proof usually chooses a suitable induction formula with a conclusion matching the goal. After applying this, we have to prove the antecedent of the formula -- here, a case distinction on $x$, first replacing $x$ with $\nil$ (1), then replacing it with $\cons(z,y)$ (2), where we have an induction hypothesis replacing $x$ with the inductive argument of $\cons(z,y)$, that is, $y$. Let us use the notation $\nil \mid y\rightarrow\cons(z,y)$ to denote this case distinction.
+
+Proving (1) is trivial using the base case of $\rev$ twice. (2) comprises the following implication:
+$$\forall z,y.\rev(\rev(y))=y\rightarrow\rev(\rev(\cons(z,y)))=\cons(z,y)$$
+After expanding $\rev(\cons(z,y))$ in the conclusion with the recursive definition of $\rev$, we can use the induction hypothesis in a right-to-left orientation on the right-hand side:
+$$\forall z,y.\rev(\append(\rev(y),\cons(z,\nil)))=\cons(z,\rev(\rev(y)))$$
+One more induction step is required, now with a \textit{generalized} induction formula, with a conclusion where $\rev(y)$ matches a fresh variable $u$:
+$$\forall z,u.\rev(\append(u,\cons(z,\nil)))=\cons(z,\rev(u))$$
+Using a similar case distinction and following the same recipe, that is, applying function definitions of $\rev$ and $\append$ and rewriting with the induction hypothesis leads to success.
+\end{example}
+
+For saturation-based theorem provers, it is very hard to prove the above theorem using standard techniques -- rewriting with the induction hypothesis in the right-to-left order gives the ordering obligation $x \succ \rev(\rev(x))$, which is impossible in any simplification ordering $\succ$.
+
+Apart from that, especially recursive cases of some function definitions are hard to orient in their natural way because their bodies can contain arbitrarily large terms with functors including the top-most of the header.
+
+Let us look at another example:
+\begin{example}\label{ex:2}
+	$$\forall x,y. \even(y)\rightarrow \even(\mul(x,y))$$
+	Here, inducting on $x$ with the simplest $\zero \mid z\rightarrow \suc(z)$ case distinction gives us the following cases:
+	$$\forall y. \even(y)\rightarrow \even(\mul(\zero,y))$$
+	The conclusion reduces to $\even(\zero)$ which becomes true according to the predicate definition of $\even$.
+	$$\forall z,y. \begin{pmatrix}(\even(y)\rightarrow \even(\mul(z,y)))\rightarrow\\
+	(\even(y)\rightarrow \even(\mul(\suc(z),y)))\end{pmatrix}$$
+	After applying the recursive definition of $\mul$ and "factoring out" the duplicate antecedent $\even(y)$, we get:
+	$$\forall z,y. \even(y)\rightarrow\begin{pmatrix}\even(\mul(z,y))\rightarrow\\
+	\even(\add(\mul(z,y),y))\end{pmatrix}$$
+	As opposed to Example \ref{ex:1}, here we cannot use the induction hypothesis because it does not match the conclusion. One might recognize however that the hypothesis and conclusion share a complex term $\mul(z,y)$. In fact, we can induct on the whole formula, generalizing over this term.
+
+	We use a different case distinction, $\zero\mid\suc(\zero)\mid u\rightarrow\suc(\suc(u))$. The reason for this becomes clear in a moment. The first case is:
+	$$\forall y. \even(y)\rightarrow\begin{pmatrix}\even(\zero)\rightarrow\\
+	\even(\add(\zero,y))\end{pmatrix}$$
+	This reduces to the valid formula:
+	$$\forall y. \even(y)\rightarrow\even(y)$$
+	The second case is:
+	$$\forall y. \even(y)\rightarrow\begin{pmatrix}\even(\suc(\zero))\rightarrow\\
+	\even(\add(\suc(\zero),y))\end{pmatrix}$$
+	This, again, is valid since the antecedent of the inner implication is false:
+	$$\forall y. \even(y)\rightarrow(\bot\rightarrow\even(\suc(y)))$$
+	Finally, the third case is (after getting rid of the duplicate $\even(y)$'s):
+	$$\forall y,u. \even(y)\rightarrow\begin{pmatrix}(\even(u)\rightarrow\even(\add(u,y)))\rightarrow\\
+	(\even(\suc(\suc(u)))\rightarrow\even(\add(\suc(\suc(u)),y)))\end{pmatrix}$$
+	Using the recursive definitions of $\add$ and $\even$, we get a valid formula:
+	$$\forall y,u. \even(y)\rightarrow\begin{pmatrix}(\even(u)\rightarrow\even(\add(u,y)))\rightarrow\\
+	(\even(u)\rightarrow\even(\add(u,y)))\end{pmatrix}$$
+	Notice that, although a single $\suc$ term matches the recursive case of $\add$, it would not match that of $\even$, so we had to use this case distinction. Also, the induction hypothesis from the previous induction was only needed in the second case $\suc(\zero)$.
+\end{example}
+
+There are two pivotal parts in the above proof that make it hard for an automated prover. The first one is to carry the assumptions in both induction steps. This may seem obvious for human and e.g. SMT solvers or proof assistants. Saturation-based theorem provers usually perform induction in a splitting manner on the clausal form of a goal, that is, for a clause $L_1\lor...\lor L_n$, each $L_i$ is inducted upon until we get the empty clause.
+
+The second pivotal point is the non-trivial induction formula in the second step. This can be guessed based on the definition of $\even$.
+
+\subsection{Contributions}
+
