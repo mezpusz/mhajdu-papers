@@ -1,0 +1,47 @@
+% !TeX root = ./paper.tex
+
+\section{Proving equational goals}
+In general, proving first-order theorems regarding inductive types requires not only using inference rules, but also coming up with the "right" induction formula when needed which is known to be undecidable.
+
+Moreover, as suggested by Example \ref{ex:1}, induction and the superposition calculus seem to be incompatible since we have to sometimes go against the ordering to get a proof. This apparent incompatibility does not contradict any completeness results and comes rather from the automation of induction -- if we know \textit{a priori} what induction formulas to use, putting them into the search space and letting any standard superposition prover do its work will give a proof.
+
+In this part, we present how special treatment of function definitions and induction hypotheses of equational induction formulas leads to more proofs.
+
+\subsection{Function definitions}
+In this paper, we consider well-founded and well-defined, possibly recursive but not mutually recursive function definitions whose branches are represented by one or more axioms in the search space. We assume that each of these axioms contains exactly one marked equality ($\rightsquigarrow$) with a fixed orientation:
+$$C\lor \mathtt{f}(\overline{s}) \rightsquigarrow t$$
+These axioms are only used as rewrite rules with the following two inference rules:
+\begin{equation}
+\infer[\small{(\texttt{DemF})}]{L[t\theta]\lor D}
+{f(\overline{s})\rightsquigarrow t & \cancel{L[f(\overline{s})\theta]\lor D}}
+\end{equation}
+where $f(\overline{s})\theta\succ t\theta$ and $L[f(\overline{x})\theta]\lor D\succ f(\overline{x})\theta=t\theta$. Since for functions containing no mutually recursive functions, the function "dependency tree" is a DAG, it is expected that this rule can be used at least for the base cases of any function definition since those definitions can be oriented in the right way by simply creating a precedence from the DAG.
+
+Second, all other non-simplifying rewriting with function definitions is done with the modified paramodulation rule:
+\begin{equation}
+\infer[\small{(\texttt{ParF})}]{L[t\theta]\lor C\theta\lor D}{f(\overline{s})\rightsquigarrow t\lor C & L[f(\overline{s})\theta]\lor D}
+\end{equation}
+This rule has no side conditions so that we can rewrite any part of a clause which helps expand function headers when needed but at the same time we lose properties such as fairness and completeness.
+
+\subsection{Induction hypotheses}
+We follow in general the induction principles used in \cite{vampireinduction,vampiregeneralization}, so our main induction rule is the following:
+\begin{equation*}
+\infer[\small{\tt (Ind)}]{\mathtt{cnf}(F \rightarrow \forall \overline{y}.L[\overline{y}])}{\overline{L}[\overline{t}] \lor C}
+\end{equation*}
+where $L$ is a ground literal, $C$ is a clause and $F \rightarrow \forall \overline{y}.L[\overline{y}]$ is a valid induction formula. $\overline{y}$ is a tuple of variables and $\overline{t}$ is a tuple of induction terms, both of size $m$.
+
+In particular, from a case distinction $t_{11},...,t_{1{m_1}}\rightarrow t_1\mid...\mid t_{n1},...,t_{n{m_n}}\rightarrow t_n$, we create induction formulas of the form:
+$$\bigwedge_{i=1}^{n}\forall \overline{z_i}.\bigg(\wedge_{j=1}^{m_i}L[\overline{t_{ij}}]\rightarrow L[\overline{t_i}]\bigg)\rightarrow \forall \overline{y}.L[\overline{y}]$$
+Upon clausifying this formula, we create for each case $t_{i1},...,t_{i{m_i}}\rightarrow t_i$ a Skolemized case $t_{i1}^\prime,...,t_{i{m_i}}^\prime\rightarrow t_i^\prime$ where each variable in $t_i$ is replaced with a fresh Skolem constant. In the clausified form, we make distinction of induction hypotheses $L[t_{i{m_i}}^\prime]$ and their corresponding induction conclusions $\overline{L}[t_i^\prime]$. We propagate this information in each inference.
+
+The induction hypothesis rewriting rule is then as follows:
+\begin{equation*}
+\infer[\small{\tt (IndHRW)}]{\mathtt{cnf}(F \rightarrow \forall \overline{y}.(s[r]=t)[\overline{y}])}{l=r \lor D& s[l]\neq t \lor C}
+\end{equation*}
+where $l=r$ is marked as induction hypothesis for $s\neq t$ and $F \rightarrow \forall \overline{y}.(s[r]=t)[\overline{y}]$ is a valid induction formula.
+
+Note that the sides of $s\neq t$ are not distinguished, that is, we can perform the inference on either sides but not on both in the same inference. Since the goal of rewriting a conclusion with its hypothesis is to make the sides equal or at least introduce some common structure, it makes sense to rewrite only one side.
+
+In fact, we can match the sides of an equality conclusion with that of its induction hypothesis. In Example \ref{ex:1}, $\rev(\rev(y))\sim\rev(\rev(\cons(z,y)))$ and $y\sim\cons(z,y)$, since they originate from the same sides of the inducted on literal.
+
+\todo{Add example about multiple hypotheses used at once}

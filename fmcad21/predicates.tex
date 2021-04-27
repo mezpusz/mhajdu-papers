@@ -1,0 +1,7 @@
+% !TeX root = ./paper.tex
+
+\section{Proving non-equational goals}
+\begin{equation*}\label{eq:multind}
+\infer[\small{\tt (IndM)}]{\mathtt{cnf}(F \rightarrow \forall \overline{y}.(\bigwedge_{1\le i\le n}L_i[\overline{y}]\rightarrow L[\overline{y}]))}{L_1[\overline{t}]\lor C_1\quad...\quad L_n[\overline{t}]\lor C_n\quad\lnot L[\overline{t}] \lor C}
+\end{equation*}
+where $L$ and $L_i$, $1\le i\le n$ are ground literals, $C$ and $C_i$, $1\le i\le n$ are clauses and $F \rightarrow \forall \overline{y}.(\bigwedge_{1\le i\le n}L_i[\overline{y}]\rightarrow L[\overline{y}])$ is a valid induction formula. $\overline{y}$ is a tuple of variables and $\overline{t}$ is a tuple of induction terms, both of size $m$. We once again binary resolve each resulting clause with the original literals to get $\mathtt{cnf}(\lnot F) \lor\bigvee_{1\le i\le n} C_i\lor C$.

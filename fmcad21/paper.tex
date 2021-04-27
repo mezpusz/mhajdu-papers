@@ -5,7 +5,10 @@
 \usepackage{vampire_induction}
 \usepackage{amsmath}
 \usepackage{mathtools}
-\usepackage{amssymb}
+\usepackage{amssymb}
+\usepackage{proof}
+\usepackage{cancel}
+\usepackage{todonotes}
 
 \newtheorem{example}{Example}
 
@@ -177,14 +180,13 @@
 	\section{Motivating Examples}
 	\label{sec:motivating}
 	\input{motivating_example.tex}
-	
-	\section{Inferences}
-	\label{sec:inferences}
-	\input{inferences.tex}
-	
-	
-	
-	
+
+	\label{sec:equations}
+	\input{equations.tex}
+
+	\label{sec:predicates}
+	\input{predicates.tex}
+
 	\section{Conclusion}
 	The conclusion goes here.
 	
@@ -228,7 +230,7 @@
 	% (used to reserve space for the reference number labels box)
 	
 	\bibliographystyle{IEEEtran}
-	\bibliography{paper-bib}
+	\bibliography{paper-bib}
 	
 %	\begin{thebibliography}{1}
 %		
