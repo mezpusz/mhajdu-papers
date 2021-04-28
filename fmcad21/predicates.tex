@@ -1,7 +1,21 @@
 % !TeX root = ./paper.tex
 
 \section{Proving non-equational goals}
+As already mentioned in Section \ref{sec:motivating}, sometimes inducting on a literal by itself is insufficient -- introducing new Skolem constants in place of induction terms makes it impossible to use assumptions or previous induction hypotheses.
+
+Generally speaking, we can extend our induction inference for a given a literal $\overline{L}$ (the main premise) to incorporate other literals $L_i$ (the side premises) that are relevant for proving $L$:
 \begin{equation*}\label{eq:multind}
-\infer[\small{\tt (IndM)}]{\mathtt{cnf}(F \rightarrow \forall \overline{y}.(\bigwedge_{1\le i\le n}L_i[\overline{y}]\rightarrow L[\overline{y}]))}{L_1[\overline{t}]\lor C_1\quad...\quad L_n[\overline{t}]\lor C_n\quad\lnot L[\overline{t}] \lor C}
+\infer[\small{\tt (IndC)}]{\mathtt{cnf}(F \rightarrow \forall \overline{y}.(\bigwedge_{1\le i\le n}L_i[\overline{y}]\rightarrow L[\overline{y}]))}{L_1[\overline{t}]\lor C_1\quad...\quad L_n[\overline{t}]\lor C_n\quad\overline{L}[\overline{t}] \lor C}
 \end{equation*}
-where $L$ and $L_i$, $1\le i\le n$ are ground literals, $C$ and $C_i$, $1\le i\le n$ are clauses and $F \rightarrow \forall \overline{y}.(\bigwedge_{1\le i\le n}L_i[\overline{y}]\rightarrow L[\overline{y}])$ is a valid induction formula. $\overline{y}$ is a tuple of variables and $\overline{t}$ is a tuple of induction terms, both of size $m$. We once again binary resolve each resulting clause with the original literals to get $\mathtt{cnf}(\lnot F) \lor\bigvee_{1\le i\le n} C_i\lor C$.
+where $\overline{L}$ and $L_i$, $1\le i\le n$ are ground literals, $C$ and $C_i$, $1\le i\le n$ are clauses and $F \rightarrow \forall \overline{y}.(\bigwedge_{1\le i\le n}L_i[\overline{y}]\rightarrow L[\overline{y}])$ is a valid induction formula. $\overline{y}$ is a tuple of variables and $\overline{t}$ is a tuple of induction terms, both of size $m$. We once again binary resolve each resulting clause with the original literals to get $\mathtt{cnf}(\lnot F) \lor\bigvee_{1\le i\le n} C_i\lor C$.
+
+Specifically, we are once again interested in induction formulas of the form
+$$\bigwedge_{i=1}^{n}\forall \overline{z_i}.\begin{pmatrix}\wedge_{j=1}^{m_i}(\wedge_kL_k[\overline{t_{ij}}]\rightarrow L[\overline{t_{ij}}])\\\rightarrow (\wedge_kL_k[\overline{t_i}]\rightarrow L[\overline{t_i}])\end{pmatrix}\rightarrow \forall \overline{y}.(\wedge_kL_k[\overline{t_{ij}}]\rightarrow L[\overline{y}])$$
+using a case distinction $t_{11},...,t_{1{m_1}}\rightarrow t_1\mid...\mid t_{n1},...,t_{n{m_n}}\rightarrow t_n$.
+
+This general rule -- as one might expect -- is not practically usable without specifying what side premises are relevant for a main premise. Notice that after clausifying the above induction formula, any literal without an occurrence of an induction term will either be present with its opposite literal in a clause (a tautology) or is a duplicate of a literal from the conclusion and will disappear after binary resolution. Therefore it makes sense to only include side premises with at least one induction term.
+
+Also, as shown in Example \ref{ex:2}, if the literal we induct on is derived from an induction conclusion, using its hypotheses as side premises can also help prove it.
+
+Another heuristic we found useful uses the measure \textit{induction depth} on clauses. This measure is zero initially, and if in an induction step, a set of clauses with maximum induction depth $m$ binary resolves with the CNF of an induction formula, the conclusions will have $m+1$ as induction depth.
+\todo[inline]{Does this only help for predicates and if we induct on some common complex term?}
