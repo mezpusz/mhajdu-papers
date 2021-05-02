@@ -43,6 +43,23 @@
 %\normalsize
 
 \begin{example}\label{ex:1}
+Given the following function definitions:
+\begin{equation}
+\begin{aligned}
+\nonumber
+&\textbf{fun } \append (x : \lst, y : \lst) \rightarrow \lst :=\\
+&\tab\textbf{match } x \textbf{ with}\\
+&\tab\tab(\nil\rightarrow y)\\ &\tab\tab(\cons(u,v)\rightarrow\cons(u,\append(v,y))\end{aligned}\end{equation}
+
+\dotfill
+\begin{equation}
+\begin{aligned}
+\nonumber
+&\textbf{fun } \rev (x : \lst) \rightarrow \lst :=\\
+&\tab\textbf{match } x \textbf{ with}\\
+&\tab\tab(\nil\rightarrow \nil)\\ &\tab\tab(\cons(u,v)\rightarrow\append(\rev(v),\cons(u,\nil))\end{aligned}\end{equation}
+
+Prove the following:
 $$\forall x. \rev(\rev(x))=x$$
 A manual proof usually chooses a suitable induction formula with a conclusion matching the goal. After applying this, we have to prove the antecedent of the formula -- here, a case distinction on $x$, first replacing $x$ with $\nil$ (1), then replacing it with $\cons(z,y)$ (2), where we have an induction hypothesis replacing $x$ with the inductive argument of $\cons(z,y)$, that is, $y$. Let us use the notation $\nil \mid y\rightarrow\cons(z,y)$ to denote this case distinction.
 
@@ -61,6 +78,32 @@ Apart from that, especially recursive cases of some function definitions are har
 
 Let us look at another example:
 \begin{example}\label{ex:2}
+	Given the definitions:
+	\begin{equation}
+	\begin{aligned}
+	\nonumber
+	&\textbf{fun } \add (x : \nat, y : \nat) \rightarrow \nat :=\\
+	&\tab\textbf{match } x \textbf{ with}\\
+	&\tab\tab(\zero\rightarrow y)\\ &\tab\tab(\suc(z)\rightarrow\suc(\add(z,y))\end{aligned}\end{equation}
+	
+	\dotfill
+	\begin{equation}
+	\begin{aligned}
+	\nonumber
+	&\textbf{fun } \mul (x : \nat, y : \nat) \rightarrow \nat :=\\
+	&\tab\textbf{match } x \textbf{ with}\\
+	&\tab\tab(\zero\rightarrow \zero)\\ &\tab\tab(\suc(z)\rightarrow \add(\mul(z,y),y)\end{aligned}\end{equation}
+	
+	\dotfill
+	\begin{equation}
+	\begin{aligned}
+	\nonumber
+	&\textbf{fun } \even (x : \nat) \rightarrow \nat :=\\
+	&\tab\textbf{match } x \textbf{ with}\\
+	&\tab\tab(\zero\rightarrow \top)\\
+	&\tab\tab(\suc(\zero)\rightarrow \bot)\\
+	&\tab\tab(\suc(\suc(z))\rightarrow \even(z))\end{aligned}\end{equation}
+	Prove the conjecture:
 	$$\forall x,y. \even(y)\rightarrow \even(\mul(x,y))$$
 	Here, inducting on $x$ with the simplest $\zero \mid z\rightarrow \suc(z)$ case distinction gives us the following cases:
 	$$\forall y. \even(y)\rightarrow \even(\mul(\zero,y))$$

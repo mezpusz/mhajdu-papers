@@ -2,7 +2,7 @@
 
 \section{Generating induction formulas}
 
-There are many ways to generate induction formulas \cite{aclhandbook,bundychapter,cruanes,hipspec,hipster,isaplanner}. In this section, we utilise function and predicate definitions to come up with induction formulas. Given an $n$-ary function $\mathtt{f}$, we define its induction template based on its function definition axioms. Each axiom $\mathcal{C}:=C\lor \mathtt{f}(\overline{s}) \rightsquigarrow t$ defines a set of recursive calls:
+There are many ways to generate induction formulas \cite{aclhandbook,bundychapter,cruanes,hipspec,hipster,isaplanner,computing}. In this section, we utilise function and predicate definitions to come up with induction formulas. Given an $n$-ary function $\mathtt{f}$, we define its induction template based on its function definition axioms. Each axiom $\mathcal{C}:=C\lor \mathtt{f}(\overline{s}) \rightsquigarrow t$ defines a set of recursive calls:
 $$\mathcal{R}(\mathcal{C}):=\{\mathtt{f}(\overline{s^\prime})\mid \mathtt{f}(\overline{s^\prime})\trianglelefteq t\}$$
 \todo[inline]{define how to merge these sets}
 We categorize argument positions $1\le i\le n$ based on \cite{cruanes}. An argument position is \textit{active} if there is an axiom $\mathcal{C}$ for $\mathtt{f}$ s.t. $s_i \trianglerighteq s^\prime_i$ for some $\mathtt{f}(\overline{s^\prime})\in\mathcal{R}(\mathcal{C})$. An argument position is \textit{accumulator} if $s_i$ is a variable and $s_i\neq s^\prime_i$. We denote the active argument positions of $\mathtt{f}$ with $I_\mathtt{f}$.
@@ -32,6 +32,15 @@ We create similar mappings unifying each $\mathtt{f}(\overline{s^\prime})\theta\
 	\end{pmatrix}\rightarrow...$$
 \end{example}
 
+The above method -- when used on each predicate and function term in a literal -- gives "matching" induction formulas in a sense that in each case of an induction formula by definition at least the term this formula was generated from will be an instance of the corresponding function/predicate definition.
+
+The method can be improved in two regards: first, we can recursively mark terms in a literal in active positions and only generate formulas from those, since all others will get stuck at some point. Second, we can create terms to generate from based on subterms in active arguments.
+
+For example the following literal contains two terms that can generate induction formulas:
+$$\neg\fleq(\sigma_0,\add(\sigma_1,\sigma_0))$$
+The first one gives induction terms $\sigma_0$ and $\add(\sigma_1,\sigma_0)$, the second $\sigma_1$, whereas we need one where we induct on $\sigma_0$ and $\sigma_1$ simultaneously, to match the recursive case of $\fleq$ after simplifying with $\add$. But when looking at the $\fleq$ term, instead of only taking the $\add$ term as the second argument, we look inside its active arguments and take $\sigma_1$ also (essentially generating from term $\fleq(\sigma_0, \sigma_1)$).
+
+More generally, when considering a term $\mathtt{f}(t_1,...,t_n)$, we take all subterms in its active argument positions $t_i$ with the same sort as $t_i$, and take all combinations (leaving non-active arguments).
 \subsection{Strengthening the hypotheses}
 In Example \ref{ex:3}, after clausification and rewriting with function definitions, the base case is solved, but we are left with the following two unit clauses (the step case conclusion and hypothesis):
 $$\qreva(\sigma_2,\sigma_1)=\append(\rev(\sigma_2),\sigma_1)$$
@@ -44,3 +53,11 @@ Our proposed solution is to use accumulator argument positions to gives us hints
 $$\qreva(\sigma_2,\cons(\sigma_3,\sigma_1))=\append(\rev(\sigma_2),\cons(\sigma_3,\sigma_1))$$
 The left-hand sides now match exactly, so applying the hypothesis gives:
 $$\append(\rev(\sigma_2),\cons(\sigma_3,\sigma_1))\neq\append(\append(\rev(\sigma_2),\cons(\sigma_3,\nil)),\sigma_1)$$
+
+\subsection{Filtering induction formulas}
+The above induction formula generation methods may result in a huge number of induction formulas, some of which are identical or contained by others, so it is essential to filter them before usage.
+
+\subsection{Generalizations}
+As described in \cite{vampiregeneralization}, inducting on all occurrences of an induction term may lead to a failed proof even if the case distinction was the right one. Inspired by \cite{cruanes}, we devised a heuristic that takes \textit{all active occurrences} of an induction term. So for example, we generalize the literal $\forall x.\fleq(x,\add(x,x))$ to $\forall x,z.\fleq(z,\add(z,x))$.
+
+But sometimes, e.g. in $\forall x.\double(x) = \add(x,x)$, we have to take all occurrences including the last, non-active one. We therefore, instead of trying to guess the right one, try all possibilities. So we generalize to $\forall x,z.\double(z) = \add(z,x)$ and $\forall z.\double(z) = \add(z,z)$ as well.

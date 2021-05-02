@@ -18,4 +18,6 @@ This general rule -- as one might expect -- is not practically usable without sp
 Also, as shown in Example \ref{ex:2}, if the literal we induct on is derived from an induction conclusion, using its hypotheses as side premises can also help prove it.
 
 Another heuristic we found useful uses the measure \textit{induction depth} on clauses. This measure is zero initially, and if in an induction step, a set of clauses with maximum induction depth $m$ binary resolves with the CNF of an induction formula, the conclusions will have $m+1$ as induction depth.
+
+The heuristic simply tells that a premise that we have not yet inducted upon can only use side premises that are similarly not inducted upon. This means that any user-supported axioms are only used in the first induction, where they are most likely to be useful.
 \todo[inline]{Does this only help for predicates and if we induct on some common complex term?}
