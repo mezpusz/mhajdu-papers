@@ -16,7 +16,7 @@
 \hyphenation{op-tical net-works semi-conduc-tor}
 
 \begin{document}
-	\title{Recursive Functions in Saturation}
+	\title{Inductive Reasoning with Recursive Function Definitions}
 
 %	\author{\IEEEauthorblockN{Márton Hajdu}
 %		\IEEEauthorblockA{TU Wien}
@@ -35,14 +35,25 @@
 	Laura Kovács\IEEEauthorrefmark{1} and
 	Andrei Voronkov\IEEEauthorrefmark{2}}
 	\IEEEauthorblockA{\IEEEauthorrefmark{1}TU Wien}
-	\IEEEauthorblockA{\IEEEauthorrefmark{2}University of Manchester}}
+	\IEEEauthorblockA{\IEEEauthorrefmark{2}University of
+          Manchester and EasyChair}}
 
 	\maketitle
 
 	% As a general rule, do not put math, special symbols or citations
 	% in the abstract
 	\begin{abstract}
-		The abstract goes here.
+Functional programs over inductively defined data types, such as lists and nauralts,
+can naturally be defined using recursive equations over recursive functions. 
+In first-order logic,  function
+definitions can be considered as universally quantified equalities. 
+Verifying functional program properties therefore 
+ requires inductive 
+reasoning with both theories and quantifiers. 
+In this paper we propose new  extensions and
+generalizations to automate induction with recursive function in saturation-based first-order theorem proving.
+Instead of using function definitions as first-order axioms, we introduced new simplification rules for
+treating function definitions as rewrite rules and guide inductive reasoning over recursive function terms.
 	\end{abstract}
 	
 	% no keywords
