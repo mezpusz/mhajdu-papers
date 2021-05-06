@@ -1,7 +1,5 @@
 % !TeX root = ./paper.tex
 
-\section{Generating induction formulas}
-
 There are many ways to generate induction formulas \cite{aclhandbook,bundychapter,cruanes,hipspec,hipster,isaplanner,computing}. In this section, we utilise function and predicate definitions to come up with induction formulas. Given an $n$-ary function $\mathtt{f}$, we define its induction template based on its function definition axioms. Each axiom $\mathcal{C}:=C\lor \mathtt{f}(\overline{s}) \rightsquigarrow t$ defines a set of recursive calls:
 $$\mathcal{R}(\mathcal{C}):=\{\mathtt{f}(\overline{s^\prime})\mid \mathtt{f}(\overline{s^\prime})\trianglelefteq t\}$$
 \todo[inline]{define how to merge these sets}
@@ -54,10 +52,8 @@ $$\qreva(\sigma_2,\cons(\sigma_3,\sigma_1))=\append(\rev(\sigma_2),\cons(\sigma_
 The left-hand sides now match exactly, so applying the hypothesis gives:
 $$\append(\rev(\sigma_2),\cons(\sigma_3,\sigma_1))\neq\append(\append(\rev(\sigma_2),\cons(\sigma_3,\nil)),\sigma_1)$$
 
-\subsection{Filtering induction formulas}
-The above induction formula generation methods may result in a huge number of induction formulas, some of which are identical or contained by others, so it is essential to filter them before usage.
-
 \subsection{Generalizations}
 As described in \cite{vampiregeneralization}, inducting on all occurrences of an induction term may lead to a failed proof even if the case distinction was the right one. Inspired by \cite{cruanes}, we devised a heuristic that takes \textit{all active occurrences} of an induction term. So for example, we generalize the literal $\forall x.\fleq(x,\add(x,x))$ to $\forall x,z.\fleq(z,\add(z,x))$.
 
-But sometimes, e.g. in $\forall x.\double(x) = \add(x,x)$, we have to take all occurrences including the last, non-active one. We therefore, instead of trying to guess the right one, try all possibilities. So we generalize to $\forall x,z.\double(z) = \add(z,x)$ and $\forall z.\double(z) = \add(z,z)$ as well.
+But sometimes, e.g. in $\forall x.\double(x) = \add(x,x)$, we have to take all occurrences including the last, non-active one. We therefore, instead of trying to guess the right one, try both active and all occurrences. So we generalize to $\forall x,z.\double(z) = \add(z,x)$ and $\forall z.\double(z) = \add(z,z)$ as well.
+

@@ -1,6 +1,5 @@
 % !TeX root = ./paper.tex
 
-\section{Proving equational goals}
 In general, proving first-order theorems regarding inductive types requires not only using inference rules, but also coming up with the "right" induction formula when needed which is known to be undecidable.
 
 Moreover, as suggested by Example \ref{ex:1}, induction and the superposition calculus seem to be incompatible since we have to sometimes go against the ordering to get a proof. This apparent incompatibility does not contradict any completeness results and comes rather from the automation of induction -- if we know \textit{a priori} what induction formulas to use, putting them into the search space and letting any standard superposition prover do its work will give a proof.
@@ -12,14 +11,14 @@ In this paper, we consider well-founded and well-defined, possibly recursive but
 $$C\lor \mathtt{f}(\overline{s}) \rightsquigarrow t$$
 These axioms are only used as rewrite rules with the following two inference rules:
 \begin{equation}
-\infer[\small{(\texttt{DemF})}]{L[t\theta]\lor D}
+\infer[\small{(\mathtt{DemF})}]{L[t\theta]\lor D}
 {f(\overline{s})\rightsquigarrow t & \cancel{L[f(\overline{s})\theta]\lor D}}
 \end{equation}
 where $f(\overline{s})\theta\succ t\theta$ and $L[f(\overline{x})\theta]\lor D\succ f(\overline{x})\theta=t\theta$. Since for functions containing no mutually recursive functions, the function "dependency tree" is a DAG, it is expected that this rule can be used at least for the base cases of any function definition since those definitions can be oriented in the right way by simply creating a precedence from the DAG.
 
 Second, all other non-simplifying rewriting with function definitions is done with the modified paramodulation rule:
 \begin{equation}
-\infer[\small{(\texttt{ParF})}]{L[t\theta]\lor C\theta\lor D}{f(\overline{s})\rightsquigarrow t\lor C & L[f(\overline{s})\theta]\lor D}
+\infer[\small{(\mathtt{ParF})}]{L[t\theta]\lor C\theta\lor D}{f(\overline{s})\rightsquigarrow t\lor C & L[f(\overline{s})\theta]\lor D}
 \end{equation}
 This rule has no side conditions so that we can rewrite any part of a clause which helps expand function headers when needed but at the same time we lose properties such as fairness and completeness.
 
