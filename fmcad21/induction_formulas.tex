@@ -1,6 +1,6 @@
 % !TeX root = ./paper.tex
 
-There are many ways to generate induction formulas \cite{aclhandbook,bundychapter,cruanes,hipspec,hipster,isaplanner,computing}. In this section, we utilise function and predicate definitions to come up with induction formulas. Given an $n$-ary function $\mathtt{f}$, we define its induction template based on its function definition axioms. Each axiom $\mathcal{C}:=C\lor \mathtt{f}(\overline{s}) \rightsquigarrow t$ defines a set of recursive calls:
+There are many ways to generate induction formulas \cite{aclhandbook,bundychapter,cruanes,hipspec,hipster,isaplanner,computing}. In this section, we utilise function and predicate definitions to come up with them. Given an $n$-ary function $\mathtt{f}$, we define its induction template based on its function definition axioms. Each axiom $\mathcal{C}:=C\lor \mathtt{f}(\overline{s}) \rightsquigarrow t$ defines a set of recursive calls:
 $$\mathcal{R}(\mathcal{C}):=\{\mathtt{f}(\overline{s^\prime})\mid \mathtt{f}(\overline{s^\prime})\trianglelefteq t\}$$
 \todo[inline]{define how to merge these sets}
 We categorize argument positions $1\le i\le n$ based on \cite{cruanes}. An argument position is \textit{active} if there is an axiom $\mathcal{C}$ for $\mathtt{f}$ s.t. $s_i \trianglerighteq s^\prime_i$ for some $\mathtt{f}(\overline{s^\prime})\in\mathcal{R}(\mathcal{C})$. An argument position is \textit{accumulator} if $s_i$ is a variable and $s_i\neq s^\prime_i$. We denote the active argument positions of $\mathtt{f}$ with $I_\mathtt{f}$.
@@ -12,7 +12,14 @@ Given a function term $\mathtt{f}(\overline{c})$, we define a case distinction o
 We create similar mappings unifying each $\mathtt{f}(\overline{s^\prime})\theta\in\mathcal{R}(\mathcal{C})$ with $\mathtt{f}(\overline{c^\prime})$.
 
 \begin{example}\label{ex:3}
-	Given a unit clause:
+	Given the function definition:
+	\begin{equation}
+	\begin{aligned}
+	\nonumber
+	&\textbf{fun } \qreva (x : \lst, y : \lst) \rightarrow \lst :=\\
+	&\tab\textbf{match } x \textbf{ with}\\
+	&\tab\tab(\nil\rightarrow y)\\ &\tab\tab(\cons(u,v)\rightarrow\qreva(v,\cons(u,y))\end{aligned}\end{equation}
+	And the unit clause:
 	$$\qreva(\sigma_0,\sigma_1)\neq\append(\rev(\sigma_0),\sigma_1)$$
 	Let us first look at the function term $\qreva(\sigma_0,\sigma_1)$:
 	We create the term with variables $\qreva(x,\sigma_1)$. Then, we unify with each
