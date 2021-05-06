@@ -1,2 +1,23 @@
 % !TeX root = ./paper.tex
 
+We assume familiarity with \textit{standard multi-sorted first-order logic with equality}. Functions are denoted with $f$, $g$, $h$, predicates with $p$, $q$, $r$ and variables with $x$, $y$, $z$, $u$, $v$, $w$, possibly with indices. We reserve the notation $\sigma$, $\sigma_0$, $\sigma_1$, etc. for Skolem constants. A term is \textit{ground} if it contains no variables. The notation $\overline{x}$ and $\overline{t}$ means tuples of variables and terms, respectively.
+
+We use the standard logical connectives $\neg$, $\lor$, $\land$, $\rightarrow$ and $\leftrightarrow$ and quantifiers $\forall$ and $\exists$. \textit{Atoms} are built inductively from terms and predicate symbols. Atoms and their negations are called \textit{literals}. For a literal $l$, we use the notation $\overline{l}$ to denote its opposite sign literal. \textit{Formulas} are built from connectives and atoms.
+
+Additionally, a disjunction of literals is a \textit{clause}. We reserve the symbol $\square$ for the \textit{empty clause} which is logically equivalent to $\bot$. A related notion is the \textit{clausal normal form} of a formula $F$ denoted by $\mathtt{cnf}(F)$. We call every term, literal, clause or formula an \textit{expression}. We use the notation $s\trianglelefteq t$ to denote that $s$ is a \textit{subterm} of $t$ and $s\triangleleft t$ if $s$ is a \textit{proper subterm} of $t$.
+
+We may use the words \textit{sort} and \textit{type} interchangeably. We distinguish special sorts called \textit{inductive sorts}, function symbols for inductive sorts called \textit{constructors} and \textit{destructors}. We distinguish \textit{recursive constructors} that are recursive in their arguments from \textit{base constructor} that are not. We call the ground terms built from the constructor symbols of a sort its \textit{term algebra}. Semantically, each $n$-ary constructor $c$ has $n$ corresponding destructors $d_1,...,d_n$. For any constructor term $c(t_1,...,t_n)$ and $1\le i\le n$, it holds that $d_i(c(t_1,...,t_n))=t_i$.
+
+We usually axiomatise every term algebra with the \textit{injectivity}, \textit{distinctness}, \textit{exhaustiveness} and \textit{acyclicity} axioms. The inductive types we use in this paper are:
+$$\begin{aligned}\nat&:=0 &&\mid \suc(\pre(\nat))\\
+\lst&:=\nil&&\mid\cons(\head(\nat),\tail(\lst))\end{aligned}$$
+%\btree&:=\bnil &&\mid \bnode(\bleft(\btree),\bval(\nat),\bright(\btree))
+
+A notation we use is $E[s]$ meaning there is zero (or more) distinguished occurrence(s) of the term $s$ in $E$. $E[t]$ then means that these occurrences are changed to a term $t$. We may abbreviate $E[t_1]...[t_n]$ with $E[\overline{t}]$.
+
+\subsection{Saturation-based proof search}
+The process of computing the \textit{closure} of a set of input clauses w.r.t. an inference system is called \textit{saturation}. If the closure contains the empty clause $\square$, the original set of clauses is unsatisfiable. A notion used in practice is \textit{saturation up to redundancy}. A clause $C$ is \textit{redundant} w.r.t. a set of clauses $S$ if some subset of $S$ smaller than $\{C\}$ logically implies $C$. An inference system is usually equipped with \textit{simplification and deletion rules} to get rid of redundant clauses. Moreover, selection methods are used to control the order in which the inferences are applied. For a more detailed discussion on saturation algorithms see \cite{cav13}.
+
+Most state-of-the-art first-order theorem provers like E, Vampire or ZipperPosition employing saturation-based proof search use the \textit{superposition calculus} \cite{handbookofar}. The superposition calculus is \textit{sound} and \textit{refutationally complete} which means for any unsatisfiable formula set -- given enough resources --, the empty clause can be derived.
+
+For the completeness a simplification term ordering $\succ$ of terms is needed (e.g. KBO, LPO) which is extended to literals and clauses with the multiset-extension. We will abuse notation and use the same symbol $\succ$ to denote the original ordering and its extensions.
