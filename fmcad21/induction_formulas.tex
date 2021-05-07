@@ -1,15 +1,19 @@
 % !TeX root = ./paper.tex
 
-There are many ways to generate induction formulas \cite{aclhandbook,bundychapter,cruanes,hipspec,hipster,isaplanner,computing}. In this section, we utilise function and predicate definitions to come up with them. Given an $n$-ary function $\mathtt{f}$, we define its induction template based on its function definition axioms. Each axiom $\mathcal{C}:=C\lor \mathtt{f}(\overline{s}) \rightsquigarrow t$ defines a set of recursive calls:
-$$\mathcal{R}(\mathcal{C}):=\{\mathtt{f}(\overline{s^\prime})\mid \mathtt{f}(\overline{s^\prime})\trianglelefteq t\}$$
-\todo[inline]{define how to merge these sets}
-We categorize argument positions $1\le i\le n$ based on \cite{cruanes}. An argument position is \textit{active} if there is an axiom $\mathcal{C}$ for $\mathtt{f}$ s.t. $s_i \trianglerighteq s^\prime_i$ for some $\mathtt{f}(\overline{s^\prime})\in\mathcal{R}(\mathcal{C})$. An argument position is \textit{accumulator} if $s_i$ is a variable and $s_i\neq s^\prime_i$. We denote the active argument positions of $\mathtt{f}$ with $I_\mathtt{f}$.
+There are many ways to generate induction formulas \cite{aclhandbook,bundychapter,cruanes,hipspec,hipster,isaplanner,computing}. In this section, we utilise function and predicate definitions to come up with them. A function or predicate has a number of branches, these are characterized by one or more clauses.  Two clauses $C\lor \mathtt{f}(\overline{s_1})\rightsquigarrow t_1$ and $D\lor \mathtt{f}(\overline{s_2})\rightsquigarrow t_2$ belong to the same branch of a function $\mathtt{f}$ if $\mathtt{f}(\overline{s_1})$ and $\mathtt{f}(\overline{s_2})$ are variants of each other. Similarly, two clauses $C\lor (\neg)\mathtt{P}(\overline{s_1})$ and $D\lor (\neg)\mathtt{P}(\overline{s_2})$ belong to the same branch of a predicate $\mathtt{P}$ if $\mathtt{P}(\overline{s_1})$ and $\mathtt{P}(\overline{s_2})$ are variants of each other. Therefore, we can characterize a branch with its characteristic term $\mathtt{f}(\overline{s})$ or atom $\mathtt{P}(\overline{t})$.
 
-\todo[inline]{Here is a big gap: we have to differentiate between active arguments, "accumulators" that are needed for the correct strengthening of hypothesis, passive one that are not variables and simply passive arguments. This is not done in the implementation either.}
+For a function, the recursive calls corresponding to one of its branches $\mathtt{f}(\overline{s})$ is the set:
+$$\mathcal{R}(\mathtt{f}(\overline{s})):=\{\mathtt{f}(\overline{s^\prime})\mid \mathtt{f}(\overline{s^\prime})\trianglelefteq t, C\lor \mathtt{f}(\overline{s}) \rightsquigarrow t\}$$
 
-Given a function term $\mathtt{f}(\overline{c})$, we define a case distinction over the terms $\{c_i\mid I_\mathtt{f}\}$ as follows: we create a new term $\mathtt{f}(\overline{c^\prime})$ where we replace each $c_i$ with $i\in I_\mathtt{f}$ with fresh variables. We then take every axiom $\mathcal{C}:=C\lor \mathtt{f}(\overline{s}) \rightsquigarrow t$ of $\mathtt{f}$. Let us define the unification of $\mathtt{f}(\overline{s})$ and $\mathtt{f}(\overline{c^\prime})$ with mgu $\theta$ as $f(\overline{t})=f(\overline{s})\theta=f(\overline{c^\prime})\theta$. If this term exists, we create a mapping $\{c_i\mapsto t_i\mid i\in I_\mathtt{f}\}$. This tells what terms to substitute for the induction terms in this case of the induction formula.
+For a predicate branch $\mathtt{P}(\overline{t})$, the set is:
+$$\mathcal{R}(\mathtt{P}(\overline{t})):=\{\mathtt{P}(\overline{s^\prime})\in C, \mathtt{P}(\overline{t})
+\lor C\}$$
 
-We create similar mappings unifying each $\mathtt{f}(\overline{s^\prime})\theta\in\mathcal{R}(\mathcal{C})$ with $\mathtt{f}(\overline{c^\prime})$.
+\todo[inline]{Argue why we are not taking guard conditions into account when generating an induction formula. The reason is more or less that after rewriting a literal stemming from induction $L[f(c(\sigma))]\lor C$ with all corresponding function definitions $f(c(x))\lor C_1$, ..., $f(c(x))\lor C_n$, we get $n$ clauses which -- given the functions are well-defined -- can be binary resolved against each other in the end. Also, due to well-definedness, there cannot be any function definition that we can demodulate (or subsumption demodulate) with, so this always results in the $n$ branches being expanded (except when $C$ already contains the matching condition from one $C_i$ but then by well-definedness, the others would be unnecessary)}
+
+We categorize argument positions $1\le i\le n$ based on \cite{cruanes}. An argument position for function $\mathtt{f}$ is \textit{active} if there is a branch characterized by $\mathtt{f}(\overline{s})$ s.t. $s_i \trianglerighteq s^\prime_i$ for some $\mathtt{f}(\overline{s^\prime})\in\mathcal{R}(\mathtt{f}(\overline{s}))$. An argument position is \textit{accumulator} if $s_i$ is a variable and $s_i\neq s^\prime_i$. We denote the active argument positions of $\mathtt{f}$ with $I_\mathtt{f}$.
+
+Given a function term $\mathtt{f}(\overline{c})$, we define a case distinction over the terms $\{c_i\mid i\in I_\mathtt{f}\}$ as follows: we create a new term $\mathtt{f}(\overline{c^\prime})$ where we replace each $c_i$ with $i\in I_\mathtt{f}$ with fresh variables. Let $\theta$ be the mgu for each branch characterized by $\mathtt{f}(\overline{s})$ and $\mathtt{f}(\overline{c})$ and let $\mathtt{f}(\overline{t}):=\mathtt{f}(\overline{s})\theta=\mathtt{f}(\overline{c^\prime})\theta$. If the two terms can be unified, we create a mapping $\{c_i\mapsto t_i\mid i\in I_\mathtt{f}\}$. This tells what terms to substitute for the induction terms in this case of the induction formula. Then, we create the mappings for the induction hypotheses corresponding to this case: we take each $\mathtt{f}(\overline{s^\prime})\theta\in\mathcal{R}(\mathtt{f}(\overline{s}))$, and unify them with $\mathtt{f}(\overline{c^\prime})$. The unifications, if they exist, give rise to similar mappings.
 
 \begin{example}\label{ex:3}
 	Given the function definition:
@@ -27,7 +31,7 @@ We create similar mappings unifying each $\mathtt{f}(\overline{s^\prime})\theta\
 	\begin{enumerate}
 		\item $\qreva(x,\sigma_1)$ unified with $\qreva(\nil,y)$ gives the mapping $\{\sigma_0\mapsto\nil\}$.
 		\item $\qreva(x,\sigma_1)$ unified with $\qreva(\cons(u,v),y)$ gives $\{\sigma_0\mapsto\cons(u,v)\}$
-		\item On the recursive call, first we apply the unifier in the header: $\qreva(v, \cons(u,\sigma_1))$. The mapping for the corresponding hypothesis is $\{\sigma_0\mapsto v\}$
+		\item To obtain the hypothesis of the second case, we first apply the unifier on its recursive call: $\qreva(v, \cons(u,\sigma_1))$. The mapping for the corresponding hypothesis is then $\{\sigma_0\mapsto v\}$.
 	\end{enumerate}
 	We use the mappings to create a corresponding induction formula: each mapping defines what to replace:
 	$$\begin{pmatrix}
