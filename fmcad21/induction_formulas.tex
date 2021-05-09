@@ -16,13 +16,9 @@ We categorize argument positions $1\le i\le n$ based on \cite{cruanes}. An argum
 Given a function term $\mathtt{f}(\overline{c})$, we define a case distinction over the terms $\{c_i\mid i\in I_\mathtt{f}\}$ as follows: we create a new term $\mathtt{f}(\overline{c^\prime})$ where we replace each $c_i$ with $i\in I_\mathtt{f}$ with fresh variables. Let $\theta$ be the mgu for each branch characterized by $\mathtt{f}(\overline{s})$ and $\mathtt{f}(\overline{c})$ and let $\mathtt{f}(\overline{t}):=\mathtt{f}(\overline{s})\theta=\mathtt{f}(\overline{c^\prime})\theta$. If the two terms can be unified, we create a mapping $\{c_i\mapsto t_i\mid i\in I_\mathtt{f}\}$. This tells what terms to substitute for the induction terms in this case of the induction formula. Then, we create the mappings for the induction hypotheses corresponding to this case: we take each $\mathtt{f}(\overline{s^\prime})\theta\in\mathcal{R}(\mathtt{f}(\overline{s}))$, and unify them with $\mathtt{f}(\overline{c^\prime})$. The unifications, if they exist, give rise to similar mappings.
 
 \begin{example}\label{ex:3}
-	Given the function definition:
-	\begin{equation}
-	\begin{aligned}
-	\nonumber
-	&\textbf{fun } \qreva (x : \lst, y : \lst) \rightarrow \lst :=\\
-	&\tab\textbf{match } x \textbf{ with}\\
-	&\tab\tab(\nil\rightarrow y)\\ &\tab\tab(\cons(u,v)\rightarrow\qreva(v,\cons(u,y))\end{aligned}\end{equation}
+	Given the function definition $\qreva : (\lst, \lst)\rightarrow\lst$:
+	\begin{align}
+	&\qreva(\nil)\rightsquigarrow y\label{qreva1}\tag{qreva.1}\\ &\qreva(\cons(u,v))\rightsquigarrow\qreva(v,\cons(u,y))\label{qreva2}\tag{qreva.2}\end{align}
 	And the unit clause:
 	$$\qreva(\sigma_0,\sigma_1)\neq\append(\rev(\sigma_0),\sigma_1)$$
 	Let us first look at the function term $\qreva(\sigma_0,\sigma_1)$:
@@ -33,12 +29,13 @@ Given a function term $\mathtt{f}(\overline{c})$, we define a case distinction o
 		\item $\qreva(x,\sigma_1)$ unified with $\qreva(\cons(u,v),y)$ gives $\{\sigma_0\mapsto\cons(u,v)\}$
 		\item To obtain the hypothesis of the second case, we first apply the unifier on its recursive call: $\qreva(v, \cons(u,\sigma_1))$. The mapping for the corresponding hypothesis is then $\{\sigma_0\mapsto v\}$.
 	\end{enumerate}
-	We use the mappings to create a corresponding induction formula: each mapping defines what to replace:
-	$$\begin{pmatrix}
-	\qreva(\nil,\sigma_1)=\append(\rev(\nil),\sigma_1)\land\\
-	\forall u,v.\begin{pmatrix}\qreva(v,\sigma_1)=\append(\rev(v),\sigma_1)\rightarrow\\
-	\qreva(\cons(u,v),\sigma_1)=\append(\rev(\cons(u,v)),\sigma_1)\end{pmatrix}
-	\end{pmatrix}\rightarrow...$$
+	We use the mappings to create an induction formula: each mapping defines what to replace in the corresponding cases and induction hypotheses. Moreover, we add an induction conclusion matching the induction terms:
+	\begin{align}
+    \nonumber	&\Big(\qreva(\nil,\sigma_1)=\append(\rev(\nil),\sigma_1)\land\\
+	\begin{split}\nonumber&\forall u,v.\big(\qreva(v,\sigma_1)=\append(\rev(v),\sigma_1)\rightarrow\\
+	&\qreva(\cons(u,v),\sigma_1)=\append(\rev(\cons(u,v)),\sigma_1)\big)\Big)\end{split}\\
+    \nonumber&\rightarrow \forall x.\qreva(x,\sigma_1)=\append(\rev(x),\sigma_1)
+	\end{align}
 \end{example}
 
 The above method -- when used on each predicate and function term in a literal -- gives "matching" induction formulas in a sense that in each case of an induction formula by definition at least the term this formula was generated from will be an instance of the corresponding function/predicate definition.
