@@ -1,2 +1,22 @@
 % !TeX root = ./paper.tex
 
+\begin{figure*}[tb]
+    \begin{tabular}{|c|c|c|c|c|c|}
+        Benchmark set&All&Vampire&Vampire*&ZipperPosition&CVC4\\
+        UFDTLIA&327&0&0&&\\
+        UFDTLIA*&327&0&0&174&235\\
+        Ind&3397&&&&\\
+        Ind*&3397&&2848&2534&165\\
+        UFDT&4527&1940&0&0&0\\
+    \end{tabular}
+    \caption{Experiments}
+    \label{fig:experiments}
+\end{figure*}
+
+We implemented the techniques presented in Vampire. In addition to Vampire's current induction formula generation methods, we added a new one, implementing Section \ref{sec:induction_formulas}. For rewriting with induction hypotheses and function definitions, as presented in Section \ref{sec:equations}, we introduce two new flags, \texttt{-indhrw} and \texttt{-fnrw}, respectively. The new induction rule presented in Section \ref{sec:predicates} using multiple premises is enabled with \texttt{-indmc}.
+
+To assess our methods experimentally, we used the benchmarking tool \textsc{BenchExec} \cite{benchmarking,competitionresults} and three benchmark sets: SMT-LIB's UFDT and UFDTLIA sets and the one described in \cite{vampiregeneralization}. To support our function definition based approach, we used the benchmarks from the latter that contain function definition blocks defined by \texttt{define-fun} and \texttt{define-fun-rec} keywords. Also, we converted the UFDTLIA set to this form to experiment without the uncertainty of incorrectly detecting function definitions.
+
+\todo[inline]{should we only consider the included problems of SMTCOMP of UFDT and UFDTLIA?}
+
+In Figure \ref{fig:experiments}, we compare the new methods against already implemented induction formula generation and generalization methods of Vampire \cite{vampiregeneralization}, and against the superposition prover ZipperPosition and the SMT solver CVC4. Each prover was given 300 seconds of time and 16 GB of memory per problem.

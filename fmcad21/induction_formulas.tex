@@ -63,5 +63,5 @@ $$\append(\rev(\sigma_2),\cons(\sigma_3,\sigma_1))\neq\append(\append(\rev(\sigm
 \subsection{Generalizations}
 As described in \cite{vampiregeneralization}, inducting on all occurrences of an induction term may lead to a failed proof even if the case distinction was the right one. Inspired by \cite{cruanes}, we devised a heuristic that takes \textit{all active occurrences} of an induction term. So for example, we generalize the literal $\forall x.\fleq(x,\add(x,x))$ to $\forall x,z.\fleq(z,\add(z,x))$.
 
-But sometimes, e.g. in $\forall x.\double(x) = \add(x,x)$, we have to take all occurrences including the last, non-active one. We therefore, instead of trying to guess the right one, try both active and all occurrences. So we generalize to $\forall x,z.\double(z) = \add(z,x)$ and $\forall z.\double(z) = \add(z,z)$ as well.
+But sometimes we have to take all occurrences, e.g. in $\forall x.\double(x) = \add(x,x)$, we have to take the last, non-active one as well. Guessing which generalization works takes up a lot of resources, therefore, we instead add generalized induction formulas to the search space for both only active and all occurrences variants. So we generalize to $\forall x,z.\double(z) = \add(z,x)$ and $\forall z.\double(z) = \add(z,z)$ as well.
 
