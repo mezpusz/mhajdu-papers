@@ -16,10 +16,7 @@ We categorize argument positions $1\le i\le n$ based on \cite{cruanes}. An argum
 Given a function term $\mathtt{f}(\overline{c})$, we define a case distinction over the terms $\{c_i\mid i\in I_\mathtt{f}\}$ as follows: we create a new term $\mathtt{f}(\overline{c^\prime})$ where we replace each $c_i$ with $i\in I_\mathtt{f}$ with fresh variables. Let $\theta$ be the mgu for each branch characterized by $\mathtt{f}(\overline{s})$ and $\mathtt{f}(\overline{c})$ and let $\mathtt{f}(\overline{t}):=\mathtt{f}(\overline{s})\theta=\mathtt{f}(\overline{c^\prime})\theta$. If the two terms can be unified, we create a mapping $\{c_i\mapsto t_i\mid i\in I_\mathtt{f}\}$. This tells what terms to substitute for the induction terms in this case of the induction formula. Then, we create the mappings for the induction hypotheses corresponding to this case: we take each $\mathtt{f}(\overline{s^\prime})\theta\in\mathcal{R}(\mathtt{f}(\overline{s}))$, and unify them with $\mathtt{f}(\overline{c^\prime})$. The unifications, if they exist, give rise to similar mappings.
 
 \begin{example}\label{ex:3}
-	Given the function definition $\qreva : (\lst, \lst)\rightarrow\lst$:
-	\begin{align}
-	&\qreva(\nil)\rightsquigarrow y\label{qreva1}\tag{qreva.1}\\ &\qreva(\cons(u,v))\rightsquigarrow\qreva(v,\cons(u,y))\label{qreva2}\tag{qreva.2}\end{align}
-	And the unit clause:
+	Given the function definitions $\append$, $\rev$ and $\qreva$ (Figure \ref{fig:defs}), generate induction formula for unit clause:
 	$$\qreva(\sigma_0,\sigma_1)\neq\append(\rev(\sigma_0),\sigma_1)$$
 	Let us first look at the function term $\qreva(\sigma_0,\sigma_1)$:
 	We create the term with variables $\qreva(x,\sigma_1)$. Then, we unify with each

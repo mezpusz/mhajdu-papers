@@ -1,63 +1,44 @@
 % !TeX root = ./paper.tex
 
-%\begin{figure}
-%\footnotesize
-%\begin{minipage}[t]{0.4\textwidth}
-%$$\begin{aligned}&\forall y.\add(0,y):=y\\
-%&\forall x,y.\add(\suc(x),y):=\suc(\add(x,y))\\
-%\end{aligned}$$
-%\hrule
-%$$\begin{aligned}&\even(0):=\top\\
-%&\even.2:\even(\suc(0)):=\bot\\
-%&\forall z.\even(\suc(\suc(z))):=\even(z)\\
-%\end{aligned}$$
-%\hrule
-%$$\begin{aligned}&\half(0):=0\\
-%&\half(\suc(0)):=0\\
-%&\forall x.\half(\suc(\suc(x)):=\suc(\half(x))\\
-%\end{aligned}$$\end{minipage}
-%\begin{minipage}[t]{0.5\textwidth}
-%$$\begin{aligned}&\size(\bnil):=0\\
-%&\forall x,y,z.\size(\bnode(x,y,z)):=\suc(\add(\size(x),\size(z)))\\
-%\end{aligned}$$
-%\hrule
-%$$\begin{aligned}
-%&\brotate(\bnil):=\nil\\
-%&\forall x,y,z,u,v.\brotate(\bnode(\bnode(x,y,z),u,v)):=\\&\quad\brotate(\bnode(x,y,\bnode(z,u,v)))
-%\end{aligned}$$
-%\end{minipage}
-%%$$\begin{aligned}&\forall y.\add(0,y)&&:=y&&\forall x.\nil\append x&&:=x\\
-%%&\forall x,y.\add(\suc(x),y)&&:=\suc(\add(x,y))&&\forall x,y,z.\cons(x,y)\append z&&:=\cons(x,y\append z)\\
-%%\cline{1-8}
-%%&\even(0)&&:=\top&&\fltn(\bnil)&&:=\nil\\
-%%&\even(\suc(0))&&:=\bot&&\forall u,v,w.\fltn(\bnode(u,v,w))&&:=\\
-%%&\forall z.\even(\suc(\suc(z)))&&:=\even(z)&&\phantom{aa}\fltn(u)\append\cons(v,\fltn(w))\\
-%%\cline{1-8}
-%%&\forall x.\fleq(0,x)&&:=\top&&\forall x.\fltn_2(\bnil,x)&&:=x\\
-%%&\forall x.\fleq(\suc(x),0)&&:=\bot&&\forall u,v,w,y.\fltn_2(\bnode(u,v,w),y)&&:=\\
-%%&\forall x,y.\fleq(\suc(x), \suc(y))&&:=\fleq(x, y)&&\phantom{aa}\fltn_2(u,\cons(v,\fltn_2(w,y)))\\
-%%\end{aligned}$$
-%\caption{Recursive function definitions used}
-%\label{fig:functions}
-%\end{figure}
-%\normalsize
+\begin{figure*}
+    \small
+    \begin{minipage}[t]{0.33\textwidth}
+        \begin{align}
+        &\even(\zero)\label{even1}\tag{even.1}\\
+        &\neg\even(\suc(\zero))\label{even2}\tag{even.2}\\
+        &\even(\suc(\suc(z)))\leftrightarrow \even(z)\label{even3}\tag{even.3}\end{align}
+        \dotfill
+        \begin{align}
+        \add(\zero,y)&\rightsquigarrow y\label{add1}\tag{add.1}\\ \add(\suc(z),y)&\rightsquigarrow\suc(\add(z,y))\label{add2}\tag{add.2}\end{align}
+    \end{minipage}\begin{minipage}[t]{0.33\textwidth}
+        \begin{align}
+        \mul(\zero,y)&\rightsquigarrow \zero\label{mul1}\tag{mul.1}\\
+        \mul(\suc(z),y)&\rightsquigarrow\nonumber\\ \add(&\mul(z,y),y)\label{mul2}\tag{mul.2}\end{align}
+        \dotfill
+        \begin{align}
+        \append(\nil)&\rightsquigarrow y\label{app1}\tag{app.1}\\ \append(\cons(u,v),y)&\rightsquigarrow\nonumber\\\cons(u,&\append(v,y))\label{app2}\tag{app.2}\end{align}
+    \end{minipage}\begin{minipage}[t]{0.33\textwidth}
+        \begin{align}
+        \rev(\nil)&\rightsquigarrow \nil\label{rev1}\tag{rev.1}\\ \rev(\cons(u,v))&\rightsquigarrow\nonumber\\
+        \append(\rev(v),&\cons(u,\nil))\label{rev2}\tag{rev.2}\end{align}
+        \dotfill
+        \begin{align}
+        \qreva(\nil)&\rightsquigarrow y\label{qreva1}\tag{qreva.1}\\ \qreva(\cons(u,v),y)&\rightsquigarrow\nonumber\\\qreva(v,\cons(&u,y))\label{qreva2}\tag{qreva.2}\end{align}
+    \end{minipage}
+    \caption{Predicate and function definitions used}
+    \label{fig:defs}
+\end{figure*}
+\normalsize
 
 \begin{example}\label{ex:1}
-Given function definitions $\append : (\lst,\lst)\rightarrow\lst$ and $\rev:(\lst)\rightarrow\lst$ characterized by:
-\begin{align}
-&\append(\nil)\rightsquigarrow y\label{app1}\tag{app.1}\\ &\append(\cons(u,v))\rightsquigarrow\cons(u,\append(v,y))\label{app2}\tag{app.2}\end{align}
-\dotfill
-\begin{align}
-&\rev(\nil)\rightsquigarrow \nil\label{rev1}\tag{rev.1}\\ &\rev(\cons(u,v))\rightsquigarrow\append(\rev(v),\cons(u,\nil))\label{rev2}\tag{rev.2}\end{align}
-
-Prove the following:
+Given function definitions $\append$ and $\rev$ (Figure \ref{fig:defs}), prove the following:
 $$\forall x. \rev(\rev(x))=x$$
 A manual proof starts with choosing a suitable induction formula and proving its antecedent. The simplest formula contains two conjuncts in the antecedent:
 \begin{equation}\label{eq:ex1.1}\rev(\rev(\nil)) = \nil\tag{1.1}\end{equation}
 Proving \eqref{eq:ex1.1} is trivial by definition \eqref{rev1}. The second conjunct is the step case with term $\cons(z,y)$ using induction hypothesis $y$:
 \begin{align}\begin{split}\forall z,y.\big(\rev(\rev(y))=y\rightarrow\\\rev(\rev(\cons(z,y)))=\cons(z,y)\big)\end{split}\label{eq:ex1.2}\tag{1.2}\end{align}
 After expanding $\rev(\cons(z,y))$ in the conclusion with \eqref{rev2}, we can use the induction hypothesis in a right-to-left orientation on the right-hand side:
-$$\forall z,y.\rev(\append(\rev(y),\cons(z,\nil)))=\cons(z,\rev(\rev(y)))$$
+$$\rev(\append(\rev(y),\cons(z,\nil)))=\cons(z,\rev(\rev(y)))$$
 One more induction step is required, now with a \textit{generalized} induction formula, with a conclusion where $\rev(y)$ matches a fresh variable $u$:
 $$\forall z,u.\rev(\append(u,\cons(z,\nil)))=\cons(z,\rev(u))$$
 Using a similar case distinction and following the same recipe, that is, applying function definitions of $\rev$ and $\append$ and rewriting with the induction hypothesis leads to success.
@@ -69,18 +50,7 @@ Apart from that, especially recursive cases of some function definitions are har
 
 Let us look at another example:
 \begin{example}\label{ex:2}
-	Given function definitions $\add : (\nat,\nat)\rightarrow\nat$ and $\mul : (\nat,\nat)\rightarrow\nat$ and predicate definition $\even : (\nat)$ given by the rules:
-	\begin{align}
-	&\add(\zero,y)\rightsquigarrow y\label{add1}\tag{add.1}\\ &\add(\suc(z),y)\rightsquigarrow\suc(\add(z,y))\label{add2}\tag{add.2}\end{align}
-	\dotfill
-	\begin{align}
-	&\mul(\zero,y)\rightsquigarrow \zero\label{mul1}\tag{mul.1}\\
-    &\mul(\suc(z),y)\rightsquigarrow \add(\mul(z,y),y)\label{mul2}\tag{mul.2}\end{align}
-	\dotfill
-	\begin{align}
-	&\even(\zero)\quad\neg\even(\suc(\zero))\label{even12}\tag{even.1\&2}\\
-	&\even(\suc(\suc(z)))\leftrightarrow \even(z)\label{even3}\tag{even.3}\end{align}
-	Prove the conjecture:
+	Given function definitions $\add$ and $\mul$ and predicate definition $\even$ from Figure \ref{fig:defs}, prove the conjecture:
 	$$\forall x,y. \even(y)\rightarrow \even(\mul(x,y))$$
 	Here, inducting on $x$ with the simplest case distinction for $\nat$ gives us the following cases:
 	\begin{equation}\forall y. \even(y)\rightarrow \even(\mul(\zero,y))\tag{2.1}\end{equation}
