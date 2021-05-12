@@ -30,7 +30,10 @@
 \end{figure*}
 \normalsize
 
-Automating verification has become one of the cornerstones of reliable software and hardware in the 21th century. Inductive reasoning is a vital ingredient in verification of software using inductive types or recursive data structures and especially in functional programming. In Figure \ref{fig:defs} we show some example of recursive function definitions.
+Automated reasong has now become the backbone of formal software development~\cite{CAV18Cook}. Automating inductive reasoning is of increasing  importance for emerging applications software verifications, in particular in the context of functional programming and inductive/algebraic data types.
+Functional programs can typically described by 
+recursive equations/functions over algebraic data types, as illustrated in Figure~\ref{fig:defs}.  On the other hand, algebraic data types, such as naturals and lists, are, for example, commony used in security applications to model hash functions properties, such as uniqueness. Expressing such and similar properties need  first-order logic with theories and require inductive reasoning for automating their validation. 
+
 
 While there is a plethora of research already done in this area \cite{bundychapter,mooreindutionhistory} with several automated theorem provers as well as proof assistants equipped with inductive reasoning techniques \cite{acl,aclhandbook,inka,oyster}, provers employing state-of-the-art techniques such as SMT solvers or saturation-based theorem provers only recently started to adopt induction \cite{cruanes,vampireinduction,smtinduction}. \todo[inline]{Write something about how SMT solvers are better currently in induction but also how saturation-based provers could be better when induction is treated more carefully}
 
