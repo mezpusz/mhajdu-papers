@@ -30,13 +30,17 @@
 \end{figure*}
 \normalsize
 
+Automating verification has become one of the cornerstones of reliable software and hardware in the 21th century. Inductive reasoning is a vital ingredient in verification of software using inductive types or recursive data structures and especially in functional programming. In Figure \ref{fig:defs} we show some example of recursive function definitions.
+
+While there is a plethora of research already done in this area \cite{bundychapter,mooreindutionhistory} with several automated theorem provers as well as proof assistants equipped with inductive reasoning techniques \cite{acl,aclhandbook,inka,oyster}, provers employing state-of-the-art techniques such as SMT solvers or saturation-based theorem provers only recently started to adopt induction \cite{cruanes,vampireinduction,smtinduction}. \todo[inline]{Write something about how SMT solvers are better currently in induction but also how saturation-based provers could be better when induction is treated more carefully}
+
 \begin{example}\label{ex:1}
 Given function definitions $\append$ and $\rev$ (Figure \ref{fig:defs}), prove the following:
 $$\forall x. \rev(\rev(x))=x$$
 A manual proof starts with choosing a suitable induction formula and proving its antecedent. The simplest formula contains two conjuncts in the antecedent:
 \begin{equation}\label{eq:ex1.1}\rev(\rev(\nil)) = \nil\tag{1.1}\end{equation}
 Proving \eqref{eq:ex1.1} is trivial by definition \eqref{rev1}. The second conjunct is the step case with term $\cons(z,y)$ using induction hypothesis $y$:
-\begin{align}\begin{split}\forall z,y.\big(\rev(\rev(y))=y\rightarrow\\\rev(\rev(\cons(z,y)))=\cons(z,y)\big)\end{split}\label{eq:ex1.2}\tag{1.2}\end{align}
+\begin{align}\forall z,y.\big(\rev(\rev(y))&=y\rightarrow\nonumber\\\rev(\rev(&\cons(z,y)))=\cons(z,y)\big)\label{eq:ex1.2}\tag{1.2}\end{align}
 After expanding $\rev(\cons(z,y))$ in the conclusion with \eqref{rev2}, we can use the induction hypothesis in a right-to-left orientation on the right-hand side:
 $$\rev(\append(\rev(y),\cons(z,\nil)))=\cons(z,\rev(\rev(y)))$$
 One more induction step is required, now with a \textit{generalized} induction formula, with a conclusion where $\rev(y)$ matches a fresh variable $u$:
@@ -54,20 +58,20 @@ Let us look at another example:
 	$$\forall x,y. \even(y)\rightarrow \even(\mul(x,y))$$
 	Here, inducting on $x$ with the simplest case distinction for $\nat$ gives us the following cases:
 	\begin{equation}\forall y. \even(y)\rightarrow \even(\mul(\zero,y))\tag{2.1}\end{equation}
-	The conclusion reduces to true using \eqref{mul1} and \eqref{even12}. The second case is:
-	\begin{align}\begin{split}\forall z,y. \big((\even(y)\rightarrow \even(\mul(z,y)))\rightarrow\\
-	(\even(y)\rightarrow \even(\mul(\suc(z),y)))\big)\end{split}\tag{2.2}\end{align}
+	The conclusion reduces to true using \eqref{mul1} and \eqref{even1}. The second case is:
+	\begin{align}\forall z,y. \Big(\big(\even(y)\rightarrow \even&(\mul(z,y))\big)\rightarrow\nonumber\\
+	\big(\even(y)&\rightarrow \even(\mul(\suc(z),y))\big)\Big)\tag{2.2}\end{align}
 	After applying \eqref{mul2} and "factoring out" the duplicate antecedent $\even(y)$, we get:
-	$$\forall z,y. \even(y)\rightarrow\begin{pmatrix}\even(\mul(z,y))\rightarrow\\
-	\even(\add(\mul(z,y),y))\end{pmatrix}$$
+	\begin{align}\nonumber\forall z,y. \even(y)\rightarrow\big(\even(\mul&(z,y))\rightarrow\\
+	\nonumber&\even(\add(\mul(z,y),y))\big)\end{align}
 	As opposed to Example \ref{ex:1}, here we cannot use the induction hypothesis because it does not match the conclusion. One might recognize however that the hypothesis and conclusion share a complex term $\mul(z,y)$. In fact, we can induct on the whole formula, generalizing over this term.
 
 	We use a different case distinction, $\zero\mid\suc(\zero)\mid u\rightarrow\suc(\suc(u))$. The reason we cannot use the simpler case distinction from earlier is because we need a step case that matches \eqref{even3}, so we can simplify it:
-    $$\forall y,u. \even(y)\rightarrow\begin{pmatrix}(\even(u)\rightarrow\even(\add(u,y)))\rightarrow\\
-    (\even(\suc(\suc(u)))\rightarrow\even(\add(\suc(\suc(u)),y)))\end{pmatrix}$$
+    \begin{align}\nonumber\forall y,u. \even(y)\rightarrow\Big(\big(\even(u)&\rightarrow\even(\add(u,y))\big)\rightarrow\\
+    \nonumber\big(\even(\suc(\suc(u)))&\rightarrow\even(\add(\suc(\suc(u)),y))\big)\Big)\end{align}
     Using \eqref{add2} and \eqref{even3} leads to the step conclusion matching exactly its hypothesis. It is also interesting to note that the second base case:
-	$$\forall y. \even(y)\rightarrow\begin{pmatrix}\even(\suc(\zero))\rightarrow\\
-	\even(\add(\suc(\zero),y))\end{pmatrix}$$
+	$$\forall y. \even(y)\rightarrow\big(\even(\suc(\zero))\rightarrow
+	\even(\add(\suc(\zero),y))\big)$$
 	is only valid since the antecedent of the inner implication is false:
 	$$\forall y. \even(y)\rightarrow(\bot\rightarrow\even(\suc(y)))$$
 \end{example}
